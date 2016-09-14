@@ -102,8 +102,14 @@ $this->breadcrumbs = $bread;
     </div>
 <?php endif; ?>
 
+<?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/thread')): ?>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
+        <div class="pull-left">
+            <?= $pagination->display(['class' => 'pagination', 'style' => 'margin: 0;']) ?>
+        </div>
+    </div>
+    <div class="col-md-6">
         <div class="pull-right">
             <a href="<?= Url::to('forum/createthread', $forumRecord['id']) ?>" class="btn btn-success btn-sm">
                 <i class="fa fa-plus"></i> <?= __('New topic') ?>
@@ -111,7 +117,11 @@ $this->breadcrumbs = $bread;
         </div>
     </div>
 </div>
+<?php else: ?>
+    <p class="alert alert-warning"><?= __('You should register or authorize on website to create new threads') ?></p>
+<?php endif; ?>
 
+<form action="" method="get">
 <div class="panel forum-panel">
     <div class="panel-heading">
         <?= $this->title ?>&nbsp;
@@ -160,6 +170,11 @@ $this->breadcrumbs = $bread;
                     </div>
 
                     <div class="col-md-3 col-sm-3 col-xs-4 topic-last-post">
+                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+                        <div class="pull-right">
+                            <input type="checkbox" name="selected[]" value="<?= $thread['id'] ?>" id="select-<?= $thread['id'] ?>" />
+                        </div>
+                        <?php endif; ?>
                         <?php if ((int)$thread['updater_id'] > 0) {
                             echo Url::link(['forum/lastpost', $thread['id']], Date::humanize($thread['updated_at']));
                         } else {
@@ -179,6 +194,13 @@ $this->breadcrumbs = $bread;
         <?php endif; ?>
     </div>
 </div>
+<?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+<div class="pull-right">
+    <input type="submit" name="delete" class="btn btn-danger" value="<?= __('Delete') ?>" formaction="<?= Url::to('forum/massdelete') ?>"/>
+</div>
+<?php endif; ?>
+</form>
+
 
 <?= $pagination->display(['class' => 'pagination']) ?>
 

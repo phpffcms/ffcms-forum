@@ -23,14 +23,13 @@ use Ffcms\Core\Arch\ActiveModel;
  */
 class ForumThread extends ActiveModel
 {
-
     /**
-     * Get thread post count
-     * @return int
+     * Get all posts relation
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function getPostsCount()
+    public function getPosts()
     {
-        return ForumPost::where('thread_id', $this->id)->count();
+        return $this->hasMany('\Apps\ActiveRecord\ForumPost', 'thread_id');
     }
 
     /**
@@ -44,7 +43,7 @@ class ForumThread extends ActiveModel
 
     /**
      * Get related forum object for current thread
-     * @return ActiveModel|null
+     * @return ForumItem|null
      */
     public function getForumRelated()
     {

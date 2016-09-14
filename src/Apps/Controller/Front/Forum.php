@@ -9,6 +9,9 @@ use Apps\ActiveRecord\ForumPost;
 use Apps\ActiveRecord\ForumThread;
 use Apps\Model\Front\Forum\EntityForumSummary;
 use Apps\Model\Front\Forum\FormCreateThread;
+use Apps\Model\Front\Forum\FormDeleteThread;
+use Apps\Model\Front\Forum\FormUpdateThread;
+use Apps\Model\Front\Forum\FormMoveThread;
 use Extend\Core\Arch\FrontAppController;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\ForbiddenException;
@@ -159,8 +162,8 @@ class Forum extends FrontAppController
     public function actionCreatethread($forumId)
     {
         // check if user is authorized
-        if (!App::$User->isAuth()) {
-            throw new ForbiddenException(__('You must authorize first!'));
+        if (!App::$User->isAuth() || !App::$User->identity()->getRole()->can('forum/thread')) {
+            throw new ForbiddenException(__('You have no permissions to create thread'));
         }
 
         // try to find forum by id
@@ -241,6 +244,7 @@ class Forum extends FrontAppController
      */
     public function actionLastpost($threadId)
     {
+        // get configs and thread object
         $configs = $this->getConfigs();
         $postPerPage = (int)$configs['postPerPage'];
         $threadRecord = ForumThread::find($threadId);
@@ -248,7 +252,8 @@ class Forum extends FrontAppController
             throw new NotFoundException(__('Topic with id %id% is not found', ['id' => (int)$threadId]));
         }
 
-        $lastPage = (int)(($threadRecord->getPostsCount()-1)/$postPerPage);
+        // parse last page and redirect url
+        $lastPage = (int)(($threadRecord->post_count-1)/$postPerPage);
         $lastPost = $threadRecord->getLastPost();
         if ($lastPost === null) {
             $url = Url::to('forum/viewthread', $threadRecord->id);
@@ -260,6 +265,112 @@ class Forum extends FrontAppController
 
         App::$Response->redirect($url, true);
         return;
+    }
+
+    /**
+     * Show delete thread form and process submit
+     * @param int $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function actionDeletethread($id)
+    {
+        // check user permissions
+        if (!App::$User->isAuth() || !App::$User->identity()->getRole()->can('forum/delete')) {
+            throw new ForbiddenException(__('You have no permissions to delete thread'));
+        }
+
+        // check if thread exists
+        $record = ForumThread::find($id);
+        if ($record === null) {
+            throw new NotFoundException(__('Thread is not found'));
+        }
+
+        // build delete model
+        $model = new FormDeleteThread($record, App::$Request->getLanguage());
+        if ($model->send() && $model->validate()) {
+            $forumId = $record->forum_id;
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Thread are successful removed'));
+            App::$Response->redirect(Url::to('forum/viewforum', $forumId), true);
+        }
+
+        return $this->view->render('forum/delete_thread', [
+            'model' => $model
+        ], $this->tplDir);
+    }
+
+    /**
+     * Show update form and process submit
+     * @param int $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function actionUpdatethread($id)
+    {
+        // check user permissions
+        if (!App::$User->isAuth() || !App::$User->identity()->getRole()->can('forum/edit')) {
+            throw new ForbiddenException(__('You have no permissions to edit thread'));
+        }
+
+        $record = ForumThread::find($id);
+        if ($record === null) {
+            throw new NotFoundException(__('Thread is not found'));
+        }
+
+        $model = new FormUpdateThread($record, App::$Request->getLanguage());
+        if ($model->send() && $model->validate()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Thread are successful updated'));
+            App::$Response->redirect(Url::to('forum/viewthread', $model->id), true);
+        }
+
+        return $this->view->render('forum/update_thread', [
+            'model' => $model,
+            'forumRecord' => $record->getForumRelated()
+        ], $this->tplDir);
+    }
+
+    /**
+     * Move thread to new forum
+     * @param int $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function actionMovethread($id)
+    {
+        // check user permissions
+        if (!App::$User->isAuth() || !App::$User->identity()->getRole()->can('forum/delete')) {
+            throw new ForbiddenException(__('You have no permissions to move thread'));
+        }
+
+        $record = ForumThread::find($id);
+        if ($record === null) {
+            throw new NotFoundException(__('Thread is not found'));
+        }
+        $forum = $record->getForumRelated();
+
+        // initialize move model & process submit
+        $model = new FormMoveThread($record, $forum, App::$Request->getLanguage());
+        if ($model->send() && $model->validate()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Thread are successful moved to new forum'));
+            App::$Response->redirect(Url::to('forum/viewthread', $model->id), true);
+        }
+
+        return $this->view->render('forum/move_thread', [
+            'model' => $model,
+            'forumRecord' => $forum
+        ], $this->tplDir);
     }
 
 }

@@ -60,41 +60,17 @@ class AddThreadCount extends Model
         if ($this->_forum === null) {
             return;
         }
-        // prepare forum thread lastpost info
-        $threadUpd = Serialize::decode($this->_forum->updated_thread);
-        $updaterUpd = Serialize::decode($this->_forum->updater_id);
-        if ($threadUpd === false) {
-            $threadUpd = [];
-        }
-        if ($updaterUpd === false) {
-            $updaterUpd = [];
-        }
-        $threadUpd = Arr::merge($threadUpd, [$this->_lang => $this->threadId]);
-        $updaterUpd = Arr::merge($updaterUpd, [$this->_lang => $this->userId]);
 
         // update forum thread_count
         $this->_forum->thread_count += 1;
-        $this->_forum->updated_thread = Serialize::encode($threadUpd);
-        $this->_forum->updater_id = Serialize::encode($updaterUpd);
         $this->_forum->save();
 
-        // update parent forum record if exist depend of language locale (see serialized 2 columns)
+        $this->_forum->updateLastInfo($this->_lang);
+
+        // update parent forum record if exist
         $parentRecord = $this->_forum->findParent();
         if ($parentRecord !== null) {
             $parentRecord->thread_count += 1;
-            $parentThreadUpd = Serialize::decode($parentRecord->updated_thread);
-            $parentUpdaterUpd = Serialize::decode($parentRecord->updater_id);
-            if ($parentThreadUpd === false) {
-                $parentThreadUpd = [];
-            }
-            if ($parentUpdaterUpd === false) {
-                $parentUpdaterUpd = [];
-            }
-            $parentThreadUpd = Arr::merge($parentThreadUpd, [$this->_lang => $this->threadId]);
-            $parentUpdaterUpd = Arr::merge($parentUpdaterUpd, [$this->_lang, $this->userId]);
-
-            $parentRecord->updated_thread = Serialize::encode($parentThreadUpd);
-            $parentRecord->updater_id = Serialize::encode($parentUpdaterUpd);
             $parentRecord->save();
         }
     }

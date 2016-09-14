@@ -2,6 +2,7 @@
 
 namespace Apps\Controller\Admin;
 
+use Apps\ActiveRecord\Role;
 use Apps\Model\Admin\Demoapp\FormDemo;
 use Apps\Model\Admin\Demoapp\FormSettings;
 use Extend\Core\Arch\AdminController;
@@ -11,6 +12,7 @@ use Ffcms\Core\Arch\View;
 use Ffcms\Core\Helper\Date;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Serialize;
+use Ffcms\Core\Helper\Type\Arr;
 
 class Forum extends AdminController
 {
@@ -155,6 +157,7 @@ class Forum extends AdminController
             ['id' => 1, 'name' => Serialize::encode(['en' => 'General', 'ru' => 'Главная']), 'created_at' => $now, 'updated_at' => $now]
         ]);
 
+        // add default forums
         App::$Database->connection()->table('forum_items')->insert([
             [
                 'id' => 1,
@@ -169,6 +172,20 @@ class Forum extends AdminController
                 'depend_id' => 1
             ]
         ]);
+
+        // add user permissions
+        App::$Properties->updateConfig('Permissions', ['forum/post', 'forum/thread', 'forum/edit', 'forum/delete']);
+        // update user default role
+        $userRole = Role::find(2);
+        if ($userRole !== null) {
+            $userRole->permissions .= ';forum/post;forum/thread';
+            $userRole->save();
+        }
+        $moderRole = Role::find(3);
+        if ($moderRole !== null) {
+            $moderRole->permissions .= ';forum/post;forum/thread;forum/edit;forum/delete';
+            $moderRole->save();
+        }
     }
 
     public static function update($dbVersion)

@@ -42,7 +42,7 @@ $this->breadcrumbs = $breads;
     </div>
     <div class="panel-body topic-body">
         <?php if ($page < 1): ?>
-        <div class="row post-row clearfix">
+        <div class="row post-row clearfix" id="post-0">
             <div class="author col-md-2 col-sm-3 col-xs-12">
                 <?php $user = \App::$User->identity($threadRecord->creator_id) ?>
                 <div class="author-name">
@@ -71,11 +71,16 @@ $this->breadcrumbs = $breads;
                     </div>
                 </div>
 
-                <div class="post-content clearfix" id="pid137">
+                <div class="post-content post-message clearfix">
                     <?= $threadRecord->message ?>
                 </div>
 
                 <div class="post-footer clearfix">
+                    <div class="pull-left" style="padding-left: 10px;">
+                        <a href="#fanswer" class="label label-primary make-quote" id="quote-post-0">
+                            <i class="fa fa-quote-right fa-lg"></i>
+                        </a>
+                    </div>
                     <!-- Report/Edit/Delete/Quote Post-->
                     <div class="post-menu pull-right">
                         <?= Url::link(['forum/deletethread', $threadRecord->id], __('Delete'), ['class' => 'label label-danger']) ?>
@@ -110,7 +115,9 @@ $this->breadcrumbs = $breads;
                     <div class="post-meta clearfix">
                         <div class="pull-left">
                             <!-- Creation date / Date modified -->
-                            <span class="text-info"><?= Date::humanize($post->created_at) ?></span>
+                            <span class="text-info">
+                                <?= Date::humanize($post->created_at) ?>
+                            </span>
                         </div>
                         <!-- Post number -->
                         <div class="pull-right">
@@ -124,21 +131,32 @@ $this->breadcrumbs = $breads;
                         </div>
                     </div>
 
-                    <div class="post-content clearfix" id="pid137">
-                        <div class="pull-right"><a href="#fanswer" class="label label-default make-quote" id="quote-post-<?= $post->id ?>"><i class="fa fa-quote-right fa-lg"></i></a></div>
-                        <div class="post-message"><?= $post->message ?></div>
+                    <div class="post-content post-message clearfix" id="post-message-<?= $post->id ?>">
+                        <?= $post->message ?>
                     </div>
+                    <?php if ((string)$post->created_at !== (string)$post->updated_at): ?>
+                    <div class="label label-warning" style="margin: 5px;">
+                        <?= __('Been edited: %date%', ['date' => Date::humanize($post->updated_at)]) ?>
+                    </div>
+                    <?php endif ?>
 
                     <div class="post-footer clearfix">
                         <!-- Report/Edit/Delete/Quote Post-->
                         <div class="post-menu">
                             <div class="pull-left" style="padding-left: 10px;">
-
+                                <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/post')): ?>
+                                    <a href="#fanswer" class="label label-default make-quote" id="quote-post-<?= $post->id ?>">
+                                        <i class="fa fa-quote-right fa-lg"></i>
+                                    </a>
+                                <?php endif; ?>
                             </div>
                             <div class="pull-right">
-                                <?= Url::link(['forum/deletepost', $post->id], __('Delete'), ['class' => 'label label-danger']) ?>
-                                <?= Url::link(['forum/updatepost', $post->id], __('Edit'), ['class' => 'label label-warning']) ?>
-                                <?= Url::link(['forum/movepost', $post->id], __('Move'), ['class' => 'label label-info']) ?>
+                                <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+                                    <a href="javascript:void(0)" class="label label-danger delete-post-trigger" id="delete-post-<?= $post->id ?>"><?= __('Delete') ?></a>
+                                <?php endif; ?>
+                                <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/edit')): ?>
+                                    <a href="javascript:void(0)" class="label label-warning edit-post-trigger" id="edit-post-<?= $post->id ?>"><?= __('Edit') ?></a>
+                                <?php endif; ?>
                             </div>
                         </div> <!-- end post-menu -->
                     </div> <!-- end footer -->
@@ -151,16 +169,19 @@ $this->breadcrumbs = $breads;
 </div>
 
 <?= $pagination->display(['class' => 'pagination pagination-sm']) ?>
-
+<?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/post')): ?>
 <div class="row" style="padding-top: 10px;">
     <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2 col-sm-offset-3">
-        <!-- todo: fix smiley in ckeditor, replace to emoji utf8 -->
     <?= Ffcms\Widgets\Ckeditor\Ckeditor::widget(['targetClass' => 'wysiwyg', 'config' => 'config-small', 'jsConfig' => ['height' => '150']]) ?>
         <textarea class="form-control wysiwyg" id="fanswer"></textarea>
         <button class="btn btn-success" id="send-push"><i class="fa fa-reply"></i> <?= __('Reply') ?></button>
     </div>
 </div>
+<?php else: ?>
+<p class="alert alert-warning"><?= __('You should register or authorize on website to add reply') ?></p>
+<?php endif; ?>
 
+<!-- new post template for ajax add -->
 <div id="post-template" class="hidden">
     <div class="row post-row clearfix" id="post-new-id">
         <div class="author col-md-2 col-sm-3 col-xs-12">
@@ -186,8 +207,33 @@ $this->breadcrumbs = $breads;
             </div>
 
             <div class="post-content clearfix">
-                <div class="pull-right"><a href="#fanswer" class="label label-default make-quote" id="quote-post-new-id"><i class="fa fa-quote-right fa-lg"></i></a></div>
                 <div class="post-message"></div>
+            </div>
+
+            <div class="post-footer clearfix">
+                <div class="post-menu" style="padding-left: 10px;">
+                    <a href="#fanswer" class="label label-default make-quote" id="quote-post-new-id">
+                        <i class="fa fa-quote-right fa-lg"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="post-edit-modal" tabindex="-1" role="dialog" aria-labelledby="post-edit-modal-title">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="post-edit-modal-title"><?= __('Edit post') ?></h4>
+            </div>
+            <div class="modal-body">
+                <textarea class="wysiwyg" id="fedit"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= __('Cancel') ?></button>
+                <button type="button" class="btn btn-primary" id="save-edit-post"><?= __('Save') ?></button>
             </div>
         </div>
     </div>
@@ -196,10 +242,16 @@ $this->breadcrumbs = $breads;
 <script>
     window.jQ.push(function() {
         $(function(){
+            // post add/delete vars
             var threadId = <?= $threadRecord->id ?>;
             var isLastPage = <?= (int)$isLastPage ?>;
             var tpl = $('#post-template').clone().removeClass('hidden');
 
+            // post edit vars
+            var msg;
+            var postId = 0;
+
+            // add new post
             $('#send-push').click(function(){
                 var msg = $('#fanswer').val();
                 if (msg.length < 10) {
@@ -221,12 +273,12 @@ $this->breadcrumbs = $breads;
                     var answer = tpl.clone();
                     answer.find('#post-new-id').attr('id', 'post-' + resp.data.id);
                     answer.find('#quote-post-new-id').attr('id', 'quote-post-'+resp.data.id);
-                    answer.find('#post-user-name').html(resp.data.user.link);
-                    answer.find('#post-user-group').text(resp.data.user.group);
-                    answer.find('#post-user-joindate').text('<?= __('Joined') ?>: '+resp.data.user.created_at);
-                    answer.find('#post-user-avatar').attr('src', resp.data.user.avatar);
-                    answer.find('#post-user-posts').text('<?= __('Posts') ?>: '+resp.data.user.posts);
-                    answer.find('#post-created-at').text(resp.data.created_at);
+                    answer.find('#post-user-name').html(resp.data.user.link).removeAttr('id');
+                    answer.find('#post-user-group').text(resp.data.user.group).removeAttr('id');
+                    answer.find('#post-user-joindate').text('<?= __('Joined') ?>: '+resp.data.user.created_at).removeAttr('id');
+                    answer.find('#post-user-avatar').attr('src', resp.data.user.avatar).removeAttr('id');
+                    answer.find('#post-user-posts').text('<?= __('Posts') ?>: '+resp.data.user.posts).removeAttr('id');
+                    answer.find('#post-created-at').text(resp.data.created_at).removeAttr('id');
                     answer.find('.post-message').html(resp.data.message);
 
                     $('#new-post-object').append(answer.html());
@@ -235,11 +287,57 @@ $this->breadcrumbs = $breads;
                 }, 'json');
             });
 
+            // quote exist post
             $(document).on("click", ".make-quote", function() {
                 var postId = $(this).attr('id').replace('quote-post-', '');
                 var quoteMsg = $('#post-'+postId).find('.post-message').html();
                 quoteMsg = '<blockquote>' + quoteMsg + '</blockquote><p>&nbsp;</p>';
                 CKEDITOR.instances.fanswer.insertHtml(quoteMsg);
+            });
+
+            // delete post via ajax
+            $('.delete-post-trigger').click(function(){
+                if (!confirm('<?= __('Are you sure to delete this post?') ?>')) {
+                    return false;
+                }
+                var postId = $(this).attr('id').replace('delete-post-', '');
+                $.getJSON(script_url+'/api/forum/deletepost/'+postId+'?lang='+script_lang, function(resp){
+                    if (resp.status !== 1) {
+                        alert(resp.message);
+                        return;
+                    }
+
+                    $('#post-'+postId).fadeOut(400, function(){
+                        $(this).remove();
+                    })
+                });
+            });
+
+            // edit post - show edit form on pop-up modal
+            $('.edit-post-trigger').click(function() {
+                postId = $(this).attr('id').replace('edit-post-', '');
+                msg = $('#post-message-'+postId);
+                CKEDITOR.instances.fedit.setData(msg.html());
+                $('#post-edit-modal').modal('show');
+            });
+
+            // save edited post data via ajax
+            $('#save-edit-post').on('click', function() {
+                var editedMsg = $('#fedit').val();
+                if (editedMsg === null || editedMsg.length < 10) {
+                    return;
+                }
+                $.post(script_url+'/api/forum/editpost/'+postId+'?lang='+script_lang, {message: editedMsg}, function(resp){
+                    if (resp.status !== 1) {
+                        alert(resp.message);
+                        return null;
+                    }
+
+                    // update displayed msg
+                    msg.html(resp.data.message);
+                    msg.fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                    $('#post-edit-modal').modal('hide');
+                });
             });
         });
     });

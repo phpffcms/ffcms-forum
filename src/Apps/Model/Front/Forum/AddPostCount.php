@@ -81,39 +81,14 @@ class AddPostCount extends Model
         /** @var ForumItem $forum */
         $forum = $this->_thread->getForumRelated();
         $forum->post_count += 1;
-        $updaterId = Serialize::decode($forum->updater_id);
-        $updatedThread = Serialize::decode($forum->updated_thread);
-        if ($updaterId === false) {
-            $updaterId = [];
-        }
-        if ($updatedThread === false) {
-            $updatedThread = [];
-        }
-
-        $updaterId = Arr::merge($updaterId, [$this->_lang => $this->_user->getId()]);
-        $updatedThread = Arr::merge($updatedThread, [$this->_lang => (int)$this->_thread->id]);
-
-        $forum->updater_id = Serialize::encode($updaterId);
-        $forum->updated_thread = Serialize::encode($updatedThread);
-
         $forum->save();
+
+        $forum->updateLastInfo();
+
         // update parent forum if exists
         $parent = $forum->findParent();
         if ($parent !== null) {
             $parent->post_count += 1;
-            $parentUpdaterId = Serialize::decode($parent->updater_id);
-            $parentUpdatedThread = Serialize::decode($parent->updated_thread);
-            if ($parentUpdaterId === false) {
-                $parentUpdaterId = [];
-            }
-            if ($parentUpdatedThread === false) {
-                $parentUpdatedThread = [];
-            }
-
-            $parentUpdaterId = Arr::merge($parentUpdaterId, [$this->_lang => $this->_user->getId()]);
-            $parentUpdatedThread = Arr::merge($parentUpdatedThread, [$this->_lang => (int)$this->_thread->id]);
-            $parent->updater_id = Serialize::encode($parentUpdaterId);
-            $parent->updated_thread = Serialize::encode($parentUpdatedThread);
             $parent->save();
         }
     }

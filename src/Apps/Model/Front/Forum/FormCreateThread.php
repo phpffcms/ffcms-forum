@@ -9,11 +9,16 @@ use Apps\ActiveRecord\ForumThread;
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Model;
 use Ffcms\Core\Exception\ForbiddenException;
+use Ffcms\Core\Helper\Date;
 use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iUser;
 
+/**
+ * Class FormCreateThread. New thread create form model
+ * @package Apps\Model\Front\Forum
+ */
 class FormCreateThread extends Model
 {
     public $title;
@@ -63,10 +68,15 @@ class FormCreateThread extends Model
         return [
             [['title', 'message'], 'required'],
             ['title', 'length_min', 3],
-            ['title', 'length_max', 100]
+            ['title', 'length_max', 100],
+            ['threadId', '\Apps\Model\Front\Forum\FormCreateThread::checkDelay']
         ];
     }
 
+    /**
+     * Form display labels
+     * @return array
+     */
     public function labels()
     {
         return [
@@ -95,5 +105,40 @@ class FormCreateThread extends Model
 
         $updateCounters = new AddThreadCount($record, $this->_lang);
         $updateCounters->make();
+    }
+
+    /**
+     * Check if user can create new thread based on time delay between 2 threads
+     * @param mixed $object
+     * @return bool
+     */
+    public static function checkDelay($object)
+    {
+        // check if user is auth
+        if (!App::$User->isAuth()) {
+            return false;
+        }
+        $user = App::$User->identity();
+        // get delay time from configs
+        $delay = (int)\Apps\ActiveRecord\App::getConfig('app', 'Forum', 'delay');
+        if ($delay < 10) {
+            $delay = 10;
+        }
+
+        // try to get latest thread for this user
+        $lastUserThrad = ForumThread::where('creator_id', $user->getId())->orderBy('created_at', 'DESC')->first();
+        if ($lastUserThrad === null) {
+            return true;
+        }
+
+        // calc last user thread time to timestamp and check diff
+        $threadTime = Date::convertToTimestamp($lastUserThrad->created_at);
+        $diff = time() - $threadTime;
+        if ($diff < $delay) {
+            App::$Session->getFlashBag()->add('error', __('You are creating threads too fast. Please wait %time%sec', ['time' => ($delay-$diff)]));
+            return false;
+        }
+
+        return true;
     }
 }
