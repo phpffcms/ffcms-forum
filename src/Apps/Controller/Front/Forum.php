@@ -10,6 +10,7 @@ use Apps\ActiveRecord\ForumThread;
 use Apps\Model\Front\Forum\EntityForumSummary;
 use Apps\Model\Front\Forum\FormCreateThread;
 use Apps\Model\Front\Forum\FormDeleteThread;
+use Apps\Model\Front\Forum\FormMassDeleteThreads;
 use Apps\Model\Front\Forum\FormUpdateThread;
 use Apps\Model\Front\Forum\FormMoveThread;
 use Extend\Core\Arch\FrontAppController;
@@ -19,6 +20,7 @@ use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\HTML\SimplePagination;
 use Ffcms\Core\Helper\Serialize;
+use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
@@ -371,6 +373,45 @@ class Forum extends FrontAppController
             'model' => $model,
             'forumRecord' => $forum
         ], $this->tplDir);
+    }
+
+    /**
+     * Process mass delete of forum threads
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function actionMassdelete()
+    {
+        // get thread ids and forum id
+        $ids = App::$Request->query->get('selected', null);
+        $forumId = App::$Request->query->getInt('forum_id');
+        if (!Obj::isArray($ids) || !Arr::onlyNumericValues($ids)) {
+            throw new ForbiddenException(__('Bad attributes'));
+        }
+
+        // make query & check items count
+        $query = ForumThread::where('forum_id', $forumId)->whereIn('id', $ids);
+        $count = $query->count();
+        if ($count < 1) {
+            throw new NotFoundException(__('Thread is not found'));
+        }
+
+        // initialize model and process post action
+        $model = new FormMassDeleteThreads($query->get(), $count, $forumId);
+        if ($model->send()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Threads are successful removed'));
+            App::$Response->redirect(Url::to('forum/viewforum', $forumId), true);
+        }
+
+        return $this->view->render('forum/massdel_thread', [
+            'model' => $model,
+            'forumId' => $forumId
+        ], $this->tplDir);
+
     }
 
 }

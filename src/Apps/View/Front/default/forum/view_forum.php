@@ -196,7 +196,8 @@ $this->breadcrumbs = $bread;
 </div>
 <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
 <div class="pull-right">
-    <input type="submit" name="delete" class="btn btn-danger" value="<?= __('Delete') ?>" formaction="<?= Url::to('forum/massdelete') ?>"/>
+    <input type="hidden" name="forum_id" value="<?= $forumRecord->id ?>" />
+    <input type="submit" class="btn btn-danger" value="<?= __('Delete') ?>" formaction="<?= Url::to('forum/massdelete') ?>"/>
 </div>
 <?php endif; ?>
 </form>

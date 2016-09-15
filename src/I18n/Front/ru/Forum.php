@@ -59,5 +59,9 @@ return [
     'Been edited: %date%' => 'Был отредактирован: %date%',
     'Are you sure to delete this post?' => 'Вы уверены что хотите удалить этот пост?',
     'Edit post' => 'Редактирование поста',
-    'You are creating threads too fast. Please wait %time%sec' => 'Вы слишком часто создаете темы. Подождите %time%сек'
+    'You are creating threads too fast. Please wait %time%sec' => 'Вы слишком часто создаете темы. Подождите %time%сек',
+    'Threads are successful removed' => 'Ветки обсуждения успешно удалены',
+    'Delete threads' => 'Массовое удаление тем',
+    'Owner' => 'Создатель',
+    'Date' => 'Дата'
 ];
