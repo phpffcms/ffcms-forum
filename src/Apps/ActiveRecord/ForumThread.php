@@ -13,11 +13,12 @@ use Ffcms\Core\Arch\ActiveModel;
  * @property string $message
  * @property int $creator_id
  * @property int $updater_id
- * @property bool $is_important
  * @property int $forum_id
  * @property string $lang
  * @property int $post_count
  * @property int $view_count
+ * @property int $important
+ * @property int $closed
  * @property string $created_at
  * @property string $updated_at
  */

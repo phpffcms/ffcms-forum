@@ -11,6 +11,8 @@ use Apps\Model\Front\Forum\EntityForumSummary;
 use Apps\Model\Front\Forum\FormCreateThread;
 use Apps\Model\Front\Forum\FormDeleteThread;
 use Apps\Model\Front\Forum\FormMassDeleteThreads;
+use Apps\Model\Front\Forum\FormPinThread;
+use Apps\Model\Front\Forum\FormStatusThread;
 use Apps\Model\Front\Forum\FormUpdateThread;
 use Apps\Model\Front\Forum\FormMoveThread;
 use Extend\Core\Arch\FrontAppController;
@@ -24,6 +26,7 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
+use Ffcms\Core\I18n\Translate;
 use Symfony\Component\HttpFoundation\Cookie;
 
 /**
@@ -62,6 +65,17 @@ class Forum extends FrontAppController
         } else {
             $user = App::$User->identity();
             ForumOnline::refresh(null, $user->getId());
+        }
+    }
+
+    /**
+     * Add global translation for profile notifications in boot
+     */
+    public static function boot()
+    {
+        $appPath = realpath(__DIR__ . './../../../');
+        if (App::$Request->getController() === 'Profile') {
+            App::$Translate->append($appPath . '/I18n/Front/' . App::$Request->getLanguage() . '/ProfileGlobal.php');
         }
     }
 
@@ -142,7 +156,7 @@ class Forum extends FrontAppController
         ]);
 
         // build currently limited treads to result object
-        $threadRecords = $threadQuery->skip($page * $threadPerPage)->take($threadPerPage)->orderBy('updated_at', 'DESC')->get();
+        $threadRecords = $threadQuery->skip($page * $threadPerPage)->take($threadPerPage)->orderBy('important', 'DESC')->orderBy('updated_at', 'DESC')->get();
 
         return $this->view->render('forum/view_forum', [
             'tplDir' => $this->tplDir,
@@ -376,6 +390,43 @@ class Forum extends FrontAppController
     }
 
     /**
+     * Pin and unpin thread
+     * @param int $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function actionStatusthread($id)
+    {
+        // check user permissions
+        if (!App::$User->isAuth() || !App::$User->identity()->getRole()->can('forum/pin')) {
+            throw new ForbiddenException(__('You have no permissions to pin thread'));
+        }
+
+        // find thread record in db
+        $record = ForumThread::find($id);
+        if ($record === null) {
+            throw new NotFoundException(__('Thread is not found'));
+        }
+        $forum = $record->getForumRelated();
+
+        // initialize model & process submit action
+        $model = new FormStatusThread($record);
+        if ($model->send() && $model->validate()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Thread status is changed'));
+            App::$Response->redirect(Url::to('forum/viewthread', $id), true);
+        }
+
+        return $this->view->render('forum/status_thread', [
+            'model' => $model,
+            'forum' => $forum
+        ], $this->tplDir);
+    }
+
+    /**
      * Process mass delete of forum threads
      * @return string
      * @throws \Ffcms\Core\Exception\SyntaxException
@@ -411,7 +462,24 @@ class Forum extends FrontAppController
             'model' => $model,
             'forumId' => $forumId
         ], $this->tplDir);
+    }
 
+    /**
+     * Show latest updated threads
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     */
+    public function actionStream()
+    {
+        // get last updated threads as object
+        $records = ForumThread::where('lang', App::$Request->getLanguage())->orderBy('updated_at', 'DESC')->take(20)->get();
+
+        // render response
+        return $this->view->render('forum/stream', [
+            'tplDir' => $this->tplDir,
+            'records' => $records
+        ], $this->tplDir);
     }
 
 }

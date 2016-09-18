@@ -38,6 +38,7 @@ return [
     'Thread is not found' => 'Ветка обсуждений не найдена',
     'You should register or authorize on website to create new threads' => 'Вы должны зарегистрироваться или авторизоваться на сайте для создания новых тем',
     'You should register or authorize on website to add reply' => 'Вы должны зарегистрироваться или авторизоваться на сайте для добавления ответа',
+    'This thread is closed from new answers' => 'Эта ветка обсуждений закрыта от новых ответов',
     'Delete thread' => 'Удаление ветки обсуждения',
     'Thread title' => 'Название ветки',
     'Post count' => 'Кол-во постов',
@@ -63,5 +64,19 @@ return [
     'Threads are successful removed' => 'Ветки обсуждения успешно удалены',
     'Delete threads' => 'Массовое удаление тем',
     'Owner' => 'Создатель',
-    'Date' => 'Дата'
+    'Date' => 'Дата',
+    'Forum latest messages' => 'Посдедние сообщения на форуме',
+    'User %user% create the new thread: %thread%' => 'Пользователь %user% создал новую тему: %thread%',
+    'There is no threads in any forums added yet' => 'На форум еще не добавлено ни одной ветки обсуждений',
+    'Thread status' => 'Состояние ветки',
+    'Change thread status' => 'Изменение состояния ветки',
+    'Pinned' => 'Закреплено',
+    'Closed' => 'Закрыто',
+    'Pin thread in forum and mark as important?' => 'Закрепить тему в форуме и отметить как важное?',
+    'Close thread from newest posts?' => 'Закрыть ветку от новых сообщений?',
+    'Thread status is changed' => 'Состояние ветки успешно изменено',
+    'Pin' => 'Закрепить',
+    'Unpin' => 'Открепить',
+    'Close' => 'Закрыть',
+    'Open' => 'Открыть'
 ];

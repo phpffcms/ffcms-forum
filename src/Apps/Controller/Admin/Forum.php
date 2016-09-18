@@ -122,11 +122,12 @@ class Forum extends AdminController
             $table->text('message');
             $table->integer('creator_id')->unsigned();
             $table->integer('updater_id')->unsigned();
-            $table->boolean('is_important');
             $table->integer('forum_id')->unsigned();
             $table->string('lang', 16)->defaunt('en');
             $table->integer('post_count')->unsigned();
             $table->integer('view_count')->unsigned();
+            $table->boolean('important')->default(false);
+            $table->boolean('closed')->default(false);
             $table->timestamps();
         });
 
@@ -174,7 +175,7 @@ class Forum extends AdminController
         ]);
 
         // add user permissions
-        App::$Properties->updateConfig('Permissions', ['forum/post', 'forum/thread', 'forum/edit', 'forum/delete']);
+        App::$Properties->updateConfig('Permissions', ['forum/post', 'forum/thread', 'forum/edit', 'forum/delete', 'forum/move', 'forum/pin', 'forum/close']);
         // update user default role
         $userRole = Role::find(2);
         if ($userRole !== null) {
@@ -183,7 +184,7 @@ class Forum extends AdminController
         }
         $moderRole = Role::find(3);
         if ($moderRole !== null) {
-            $moderRole->permissions .= ';forum/post;forum/thread;forum/edit;forum/delete';
+            $moderRole->permissions .= ';forum/post;forum/thread;forum/edit;forum/delete;forum/close';
             $moderRole->save();
         }
     }

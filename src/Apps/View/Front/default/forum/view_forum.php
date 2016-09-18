@@ -142,7 +142,7 @@ $this->breadcrumbs = $bread;
                     <div class="col-md-5 col-sm-5 col-xs-8 topic-info">
                         <div class="row">
                             <div class="col-md-1 col-sm-2 col-xs-2 topic-status">
-                                <span class="fa fa-comment-o topic-read"></span>
+                                <span class="fa <?= ((bool)$thread->important ? 'fa-star' : ((bool)$thread->closed ? 'fa-times-circle-o' : 'fa-comment-o')); ?> topic-read"></span>
                             </div>
                             <div class="col-md-11 col-sm-10 col-xs-10">
                                 <div class="topic-name">
@@ -194,7 +194,7 @@ $this->breadcrumbs = $bread;
         <?php endif; ?>
     </div>
 </div>
-<?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+<?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete') && $threadRecords !== null && $threadRecords->count() > 0): ?>
 <div class="pull-right">
     <input type="hidden" name="forum_id" value="<?= $forumRecord->id ?>" />
     <input type="submit" class="btn btn-danger" value="<?= __('Delete') ?>" formaction="<?= Url::to('forum/massdelete') ?>"/>

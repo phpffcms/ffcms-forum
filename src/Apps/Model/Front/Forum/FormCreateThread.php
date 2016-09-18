@@ -95,7 +95,6 @@ class FormCreateThread extends Model
         $record->title = App::$Security->strip_tags($this->title);
         $record->message = App::$Security->secureHtml($this->message);
         $record->creator_id = $this->_user->getId();
-        $record->is_important = false;
         $record->forum_id = $this->_record->id;
         $record->lang = $this->_lang;
         $record->save();

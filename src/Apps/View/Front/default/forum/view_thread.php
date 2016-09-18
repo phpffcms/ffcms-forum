@@ -38,6 +38,8 @@ $this->breadcrumbs = $breads;
 
 <div class="panel topic-panel">
     <div class="panel-heading topic-head">
+        <?= (bool)$threadRecord->important ? '<i class="fa fa-star-o fa-lg"></i>' : null ?>
+        <?= (bool)$threadRecord->closed ? '<i class="fa fa-times fa-lg"></i>' : null ?>
         <?= $threadRecord->title ?>
     </div>
     <div class="panel-body topic-body">
@@ -83,9 +85,21 @@ $this->breadcrumbs = $breads;
                     </div>
                     <!-- Report/Edit/Delete/Quote Post-->
                     <div class="post-menu pull-right">
-                        <?= Url::link(['forum/deletethread', $threadRecord->id], __('Delete'), ['class' => 'label label-danger']) ?>
-                        <?= Url::link(['forum/updatethread', $threadRecord->id], __('Edit'), ['class' => 'label label-warning']) ?>
-                        <?= Url::link(['forum/movethread', $threadRecord->id], __('Move'), ['class' => 'label label-info']) ?>
+                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+                            <?= Url::link(['forum/deletethread', $threadRecord->id], __('Delete'), ['class' => 'label label-danger']) ?>
+                        <?php endif; ?>
+                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/edit')): ?>
+                            <?= Url::link(['forum/updatethread', $threadRecord->id], __('Edit'), ['class' => 'label label-warning']) ?>
+                        <?php endif; ?>
+                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/move')): ?>
+                            <?= Url::link(['forum/movethread', $threadRecord->id], __('Move'), ['class' => 'label label-info']) ?>
+                        <?php endif; ?>
+                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/pin')): ?>
+                            <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->important ? __('Unpin') : __('Pin')), ['class' => 'label label-primary']) ?>
+                        <?php endif; ?>
+                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/close')): ?>
+                            <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->closed ? __('Open') : __('Close')), ['class' => 'label label-default']) ?>
+                        <?php endif; ?>
                     </div> <!-- end post-menu -->
                 </div> <!-- end footer -->
 
@@ -169,16 +183,18 @@ $this->breadcrumbs = $breads;
 </div>
 
 <?= $pagination->display(['class' => 'pagination pagination-sm']) ?>
-<?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/post')): ?>
-<div class="row" style="padding-top: 10px;">
-    <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2 col-sm-offset-3">
-    <?= Ffcms\Widgets\Ckeditor\Ckeditor::widget(['targetClass' => 'wysiwyg', 'config' => 'config-small', 'jsConfig' => ['height' => '150']]) ?>
-        <textarea class="form-control wysiwyg" id="fanswer"></textarea>
-        <button class="btn btn-success" id="send-push"><i class="fa fa-reply"></i> <?= __('Reply') ?></button>
-    </div>
-</div>
+<?php if (!\App::$User->isAuth() || !\App::$User->identity()->getRole()->can('forum/post')): ?>
+    <p class="alert alert-warning"><?= __('You should register or authorize on website to add reply') ?></p>
+<?php elseif ((bool)$threadRecord->closed): ?>
+    <p class="alert alert-warning"><?= __('This thread is closed from new answers') ?></p>
 <?php else: ?>
-<p class="alert alert-warning"><?= __('You should register or authorize on website to add reply') ?></p>
+    <div class="row" style="padding-top: 10px;">
+        <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2 col-sm-offset-3">
+            <?= Ffcms\Widgets\Ckeditor\Ckeditor::widget(['targetClass' => 'wysiwyg', 'config' => 'config-small', 'jsConfig' => ['height' => '150']]) ?>
+            <textarea class="form-control wysiwyg" id="fanswer"></textarea>
+            <button class="btn btn-success" id="send-push"><i class="fa fa-reply"></i> <?= __('Reply') ?></button>
+        </div>
+    </div>
 <?php endif; ?>
 
 <!-- new post template for ajax add -->
