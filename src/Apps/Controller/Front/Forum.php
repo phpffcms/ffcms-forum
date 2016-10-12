@@ -93,7 +93,7 @@ class Forum extends FrontAppController
 
         // build category-forum-subforum tree
         foreach ($categories as $category) {
-            $fullTree[$category['id']] = $category->toArray();
+            $fullTree[$category['order_id']] = $category->toArray();
             /** @var $category ForumCategory */
             $forums = $category->getForumTree();
             if ($forums === null || !Obj::isArray($forums)) {
@@ -102,17 +102,24 @@ class Forum extends FrontAppController
 
             // add sub forums and post_count/thread_count
             foreach($forums as $forum) {
-                $fullTree[$category['id']]['forums'][$forum['order_id']] = $forum;
+                $fullTree[$category['order_id']]['forums'][$forum['order_id']] = $forum;
                 $updateThread = Serialize::decode($forum['updated_thread']);
                 if (Obj::isArray($updateThread) && isset($updateThread[App::$Request->getLanguage()])) {
                     $lastThread = ForumThread::find($updateThread[App::$Request->getLanguage()]);
-                    $fullTree[$category['id']]['forums'][$forum['order_id']]['lastthread'] = [
+                    $fullTree[$category['order_id']]['forums'][$forum['order_id']]['lastthread'] = [
                         'title' => $lastThread['title'],
                         'id' => $lastThread['id'],
                         'user_id' => $lastThread['updater_id'] < 1 ? $lastThread['creator_id'] : $lastThread['updater_id']
                     ];
                 }
+                // sort ASC forums
+                ksort($fullTree[$category['order_id']]['forums']);
             }
+        }
+
+        // sort in ASC by order_id categories
+        if (Obj::isArray($fullTree)) {
+            ksort($fullTree);
         }
 
         $configs = $this->getConfigs();

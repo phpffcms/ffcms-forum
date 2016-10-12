@@ -2,17 +2,21 @@
 
 namespace Apps\Controller\Admin;
 
+use Apps\ActiveRecord\ForumCategory;
+use Apps\ActiveRecord\ForumItem;
+
 use Apps\ActiveRecord\Role;
-use Apps\Model\Admin\Demoapp\FormDemo;
-use Apps\Model\Admin\Demoapp\FormSettings;
+use Apps\Model\Admin\Forum\FormCategoryUpdate;
+use Apps\Model\Admin\Forum\FormForumDelete;
+use Apps\Model\Admin\Forum\FormForumUpdate;
 use Extend\Core\Arch\AdminController;
 use Apps\ActiveRecord\App as AppRecord;
 use Ffcms\Core\App;
-use Ffcms\Core\Arch\View;
+use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Helper\Date;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Serialize;
-use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Obj;
 
 class Forum extends AdminController
 {
@@ -29,7 +33,7 @@ class Forum extends AdminController
         parent::before();
         // define application root diskpath and tpl native directory
         $this->appRoot = realpath(__DIR__ . '/../../../');
-        $this->tplDir = realpath($this->appRoot . '/Apps/View/Admin/default/forum/');
+        $this->tplDir = realpath($this->appRoot . '/Apps/View/Admin/default/');
         // load internalization package for current lang
         $langFile = $this->appRoot . '/I18n/Admin/' . App::$Request->getLanguage() . '/Forum.php';
         if (App::$Request->getLanguage() !== 'en' && File::exist($langFile)) {
@@ -45,16 +49,114 @@ class Forum extends AdminController
      */
     public function actionIndex()
     {
-        // point-oriented render of output viewer
-        return App::$View->render(
-            'index',
-            [
-                'tplPath' => $this->tplDir,
-                'appRoute' => $this->appRoot,
-                'scriptsVersion' => self::VERSION,
-                'dbVersion' => $this->application->version
-            ],
-            $this->tplDir);
+        // get all board categories
+        $categories = ForumCategory::all();
+        $tree = null;
+
+        // build category-forum-subforum tree
+        foreach ($categories as $category) {
+            $tree[$category['order_id']] = $category->toArray();
+            /** @var $category ForumCategory */
+            $forums = $category->getForumTree();
+            if ($forums === null || !Obj::isArray($forums)) {
+                continue;
+            }
+
+            // add sub forums and post_count/thread_count
+            foreach($forums as $forum) {
+                $tree[$category['order_id']]['forums'][$forum['order_id']] = $forum;
+            }
+            ksort($tree[$category['order_id']]['forums']);
+        }
+        ksort($tree);
+
+        // render output view
+        return $this->view->render('forum/index', [
+            'tplPath' => $this->tplDir,
+            'tree' => $tree
+        ], $this->tplDir);
+    }
+
+    /**
+     * Create or edit category
+     * @param int|null $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     */
+    public function actionUpdatecategory($id = null)
+    {
+        // find forum category object
+        $category = ForumCategory::findOrNew($id);
+        // initialize model and process submit
+        $model = new FormCategoryUpdate($category);
+        if ($model->send() && $model->validate()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('New category is sucessful added'));
+            App::$Response->redirect('forum/index');
+        }
+
+        return $this->view->render('forum/update_category', [
+            'tplPath' => $this->tplDir,
+            'model' => $model
+        ], $this->tplDir);
+    }
+
+    /**
+     * Create or edit forum item
+     * @param int|null $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     */
+    public function actionUpdateforum($id = null)
+    {
+        $parentForum = (int)App::$Request->query->get('parent', 0);
+        // find forum item active record object
+        $forum = ForumItem::findOrNew($id);
+
+        // initialize model and process form submit
+        $model = new FormForumUpdate($forum, $parentForum);
+        if ($model->send() && $model->validate()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Forum are successful updated'));
+            App::$Response->redirect('forum/index');
+        }
+
+        // render output view
+        return $this->view->render('forum/update_forum', [
+            'model' => $model
+        ], $this->tplDir);
+    }
+
+    /**
+     * Delete forum item action
+     * @param int $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws NotFoundException
+     */
+    public function actionDeleteforum($id)
+    {
+        // find target record by id
+        $forum = ForumItem::find($id);
+        if ($forum === null) {
+            throw new NotFoundException(__('Forum not found'));
+        }
+
+        // initialize working model
+        $model = new FormForumDelete($forum);
+        if ($model->send() && $model->validate()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Forum are successful removed'));
+            App::$Response->redirect('forum/index');
+        }
+
+        return $this->view->render('forum/delete_forum', [
+            'model' => $model
+        ], $this->tplDir);
+
     }
 
     /**

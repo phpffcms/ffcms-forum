@@ -69,6 +69,7 @@ class FormCreateThread extends Model
             [['title', 'message'], 'required'],
             ['title', 'length_min', 3],
             ['title', 'length_max', 100],
+            ['message', 'length_max', 10000],
             ['threadId', '\Apps\Model\Front\Forum\FormCreateThread::checkDelay']
         ];
     }

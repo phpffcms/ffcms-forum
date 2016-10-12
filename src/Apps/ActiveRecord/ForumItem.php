@@ -3,12 +3,13 @@
 namespace Apps\ActiveRecord;
 
 
-use Ffcms\Core\App;
+use Ffcms\Core\App as AppMain;
 use Ffcms\Core\Arch\ActiveModel;
 use Ffcms\Core\Cache\MemoryObject;
 use Ffcms\Core\Helper\Date;
 use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Obj;
 
 /**
  * Class ForumItem. Active record model for db table forum_items
@@ -62,11 +63,16 @@ class ForumItem extends ActiveModel
 
             // look's like sub-forum item
             if ((int)$forum->depend_id !== 0) {
-                $tree[$forum->depend_id]['depend'][] = $forum->toArray();
+                $tree[$forum->depend_id]['depend'][$forum->order_id] = $forum->toArray();
+                ksort($tree[$forum->depend_id]['depend']);
             } else {
                 $tree[$forum->id] = $forum->toArray();
             }
         }
+        if (Obj::isArray($tree)) {
+            ksort($tree);
+        }
+
         return $tree;
     }
 
@@ -87,7 +93,7 @@ class ForumItem extends ActiveModel
     public function getLastThread($lang = null)
     {
         if ($lang === null) {
-            $lang = App::$Request->getLanguage();
+            $lang = AppMain::$Request->getLanguage();
         }
         return ForumThread::where('forum_id', $this->id)->where('lang', $lang)->orderBy('updated_at', 'DESC')->first();
     }
@@ -107,7 +113,7 @@ class ForumItem extends ActiveModel
      */
     public function getCategory()
     {
-        return $this->belongsTo('Apps\ActiveRecord\ForumCategory');
+        return ForumCategory::find($this->category_id);
     }
 
     /**
@@ -121,11 +127,16 @@ class ForumItem extends ActiveModel
         foreach ($records as $forum) {
             // look's like sub-forum item
             if ((int)$forum->depend_id !== 0) {
-                $tree[$forum->depend_id]['depend'][] = $forum->toArray();
+                $tree[$forum->depend_id]['depend'][$forum->order_id] = $forum->toArray();
+                ksort($tree[$forum->depend_id]['depend']);
             } else {
                 $tree[$forum->id] = $forum->toArray();
             }
         }
+        if (Obj::isArray($tree)) {
+            ksort($tree);
+        }
+
         return $tree;
     }
 
@@ -136,7 +147,7 @@ class ForumItem extends ActiveModel
     public function updateLastInfo($lang = null)
     {
         if ($lang === null) {
-            $lang = App::$Request->getLanguage();
+            $lang = AppMain::$Request->getLanguage();
         }
         // get last thread info for this forum
         $lastThread = $this->getLastThread($lang);
