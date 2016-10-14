@@ -11,13 +11,11 @@ $this->title = __('Move thread');
 $this->breadcrumbs = [
     Url::to('/') => __('Home'),
     Url::to('forum/index') => __('Forum index'),
-    Url::to('forum/viewforum', $forumRecord['id']) => \Ffcms\Core\Helper\Serialize::getDecodeLocale($forumRecord['name']),
+    Url::to('forum/viewforum', $forumRecord['id']) => $forumRecord['name'][$this->lang],
     __('Move thread')
 ];
 
 ?>
-
-
 <h1><?= __('Move thread') ?></h1>
 <hr />
 <?php $form = new Form($model, ['class' => 'form-horizontal', 'action' => '', 'method' => 'post']); ?>

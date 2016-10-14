@@ -8,13 +8,14 @@ use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
 
+/** @var \Ffcms\Core\Arch\View $this */
 /** @var array $tree */
 /** @var array $configs */
 /** @var \Apps\Model\Front\Forum\EntityForumSummary $summary */
 
 echo $this->render('forum/_tabs', [], $tplDir);
 
-$title = Serialize::getDecodeLocale($configs['metaTitle']);
+$title = \App::$Translate->getLocaleText($configs['metaTitle']);
 if (Str::likeEmpty($title)) {
     $title = __('Forum');
 }
@@ -35,7 +36,7 @@ if (!Obj::isArray($tree) || count($tree) < 1) {
 <div class="forum-index">
 <?php foreach ($tree as $category): ?>
     <div class="panel panel-default forum-panel panel-major">
-        <div class="panel-heading"><?= Serialize::getDecodeLocale($category['name']) ?></div>
+        <div class="panel-heading"><?= \App::$Translate->getLocaleText($category['name']) ?></div>
 
         <div class="panel-body category-body">
             <div class="category-meta">
@@ -58,12 +59,12 @@ if (!Obj::isArray($tree) || count($tree) < 1) {
                             <div class="col-md-11 col-sm-10 col-xs-10">
                                 <!-- forum title link-name -->
                                 <div class="forum-name">
-                                    <?= Url::link(['forum/viewforum', $forum['id']], Serialize::getDecodeLocale($forum['name'])) ?>
+                                    <?= Url::link(['forum/viewforum', $forum['id']], \App::$Translate->getLocaleText($forum['name'])) ?>
                                 </div>
 
                                 <!-- Forum Description -->
                                 <div class="forum-description">
-                                    <p><?= Serialize::getDecodeLocale($forum['snippet']) ?></p>
+                                    <p><?= \App::$Translate->getLocaleText($forum['snippet']) ?></p>
                                 </div>
 
                                 <!-- sub forums list -->
@@ -71,7 +72,7 @@ if (!Obj::isArray($tree) || count($tree) < 1) {
                                 <div>
                                     <ul class="list-inline forum-sublist">
                                         <?php foreach ($forum['depend'] as $sub): ?>
-                                        <li><i class="fa fa-folder-open-o"></i> <?= Url::link(['forum/viewforum', $sub['id']], Serialize::getDecodeLocale($sub['name'])) ?></li>
+                                        <li><i class="fa fa-folder-open-o"></i> <?= Url::link(['forum/viewforum', $sub['id']], \App::$Translate->getLocaleText($sub['name'])) ?></li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>

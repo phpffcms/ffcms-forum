@@ -39,5 +39,25 @@ return [
     'Select target forum where all threads and posts are moved' => 'Выберите форум-приемник для всех веток и сообщений из удаляемого форума',
     'Delete' => 'Удалить',
     'Forum not found' => 'Форум не найден',
-    'Forum are successful removed' => 'Форум успешно удален'
+    'Forum are successful removed' => 'Форум успешно удален',
+    'Delete category' => 'Удаление категории',
+    'Attention! You are try to delete forum category. If forums will not be moved to new category they are be finally removed.' => 'Внимание! Вы пытаетесь удалить раздел форума. Если форумы из данного раздела не будут перемещены - они будут окончательно удалены.',
+    'Select target category where all forums are moved' => 'Выберите целевую категорию, куда будут перемещены все форумы',
+    'Category are successful removed' => 'Категория успешно удалена',
+    'Forum settings' => 'Настройки форума',
+    'Threads per page' => 'Тем на страницу',
+    'Set count of topic threads per page' => 'Укажите количество тем, отображаемых на одной странице',
+    'Posts per page' => 'Сообщений на страницу',
+    'Set posts count to display on 1 page' => 'Укажите количество сообщений, отображаемых на одной странице ветки обсуждений',
+    'Delay' => 'Задержка',
+    'Specify delay between 2 messages from user in seconds' => 'Укажите задержку между двумя сообщениями от пользователя в сек',
+    'Cache summary' => 'Кеширование статистики',
+    'Specify cache time for summary statistics users online' => 'Укажите время обновления статистики онлайн пользователей форума в сек',
+    'Forum title' => 'Заголовок форума',
+    'Set forum main page title' => 'Укажите заголовок главной страницы форума',
+    'Forum description' => 'Описание форума',
+    'Set forum meta description' => 'Укажите мета-описание для форума',
+    'Forum keywords' => 'Ключевые слова форума',
+    'Set forum keywords separeted by comma' => 'Укажите мета ключевые слова для форума, разделенные запятой'
+
 ];

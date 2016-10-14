@@ -22,13 +22,18 @@ use Ffcms\Core\Helper\Type\Obj;
  * @property int $depend_id
  * @property int $thread_count
  * @property int $post_count
- * @property int $updater_id
- * @property int $updated_thread
+ * @property string|array $updater_id
+ * @property string|array $updated_thread
  * @property string $created_at
  * @property string $updated_at
  */
 class ForumItem extends ActiveModel
 {
+    protected $casts = [
+        'name' => 'serialize',
+        'snippet' => 'serialize'
+    ];
+
     /**
      * Get full table data as object
      * @param array $columns

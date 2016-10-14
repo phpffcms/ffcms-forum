@@ -7,8 +7,6 @@ use Apps\ActiveRecord\ForumItem;
 use Apps\ActiveRecord\ForumThread;
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Model;
-use Ffcms\Core\Helper\Serialize;
-use Ffcms\Core\Helper\Type\Arr;
 
 /**
  * Class UpdateThreadCount. Special "count&update" class for forum structure. Required ForumThread new object to pass inside.

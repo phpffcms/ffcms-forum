@@ -6,7 +6,6 @@ namespace Apps\Model\Admin\Forum;
 use Apps\ActiveRecord\ForumCategory;
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Model;
-use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
@@ -33,7 +32,7 @@ class FormCategoryUpdate extends Model
      */
     public function before()
     {
-        $this->name = Serialize::decode($this->_record->name);
+        $this->name = $this->_record->name;
         $this->orderId = $this->_record->order_id;
     }
 
@@ -70,7 +69,7 @@ class FormCategoryUpdate extends Model
         if ($this->orderId === null || !Obj::isLikeInt($this->orderId)) {
             $this->orderId = mt_rand(100, 100000);
         }
-        $this->_record->name = Serialize::encode($this->name);
+        $this->_record->name = $this->name;
         $this->_record->order_id = $this->orderId;
         $this->_record->save();
     }

@@ -11,14 +11,12 @@ $this->title = __('Add new thread');
 $this->breadcrumbs = [
     Url::to('/') => __('Home'),
     Url::to('forum/index') => __('Forum index'),
-    Url::to('forum/viewforum', $forumRecord['id']) => \Ffcms\Core\Helper\Serialize::getDecodeLocale($forumRecord['name']),
+    Url::to('forum/viewforum', $forumRecord['id']) => $forumRecord['name'][$this->lang],
     __('Create thread')
 ];
 
 echo Ffcms\Widgets\Ckeditor\Ckeditor::widget(['targetClass' => 'wysiwyg', 'config' => 'config-small', 'jsConfig' => ['height' => '300']]);
-
 ?>
-
 <h1><?= __('New thread') ?></h1>
 <hr />
 <?php $form = new Form($model, ['class' => 'form-horizontal', 'action' => '', 'method' => 'post']); ?>

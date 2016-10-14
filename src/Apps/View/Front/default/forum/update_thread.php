@@ -1,6 +1,5 @@
 <?php
 
-use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Url;
 use Ffcms\Core\Helper\HTML\Form;
 
@@ -12,7 +11,7 @@ $this->title = __('Update thread');
 $this->breadcrumbs = [
     Url::to('/') => __('Home'),
     Url::to('forum/index') => __('Forum index'),
-    Url::to('forum/viewforum', $forumRecord['id']) => Serialize::getDecodeLocale($forumRecord['name']),
+    Url::to('forum/viewforum', $forumRecord['id']) => \App::$Translate->getLocaleText($forumRecord['name']),
     __('Edit thread')
 ];
 

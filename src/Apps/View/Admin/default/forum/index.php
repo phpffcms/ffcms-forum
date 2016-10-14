@@ -1,6 +1,5 @@
 <?php
-use Ffcms\Core\Helper\HTML\Table;
-use Ffcms\Core\Helper\Serialize;
+
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Url;
 
@@ -34,7 +33,7 @@ if (!Obj::isArray($tree)) {
 <?php foreach ($tree as $category): ?>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <?= Serialize::getDecodeLocale($category['name']) ?> <sup class="text-success">[<?= $category['order_id'] ?>]</sup>
+            <?= App::$Translate->getLocaleText($category['name']) ?> <sup class="text-success">[<?= $category['order_id'] ?>]</sup>
             <a href="<?= Url::to('forum/updatecategory', $category['id']) ?>"><i class="fa fa-pencil"></i></a>
             <a href="<?= Url::to('forum/deletecategory', $category['id']) ?>"><i class="fa fa-trash-o"></i></a>
         </div>
@@ -45,11 +44,11 @@ if (!Obj::isArray($tree)) {
             <?php foreach ($category['forums'] as $forum): ?>
                 <div class="row">
                     <div class="col-md-9">
-                        <strong><?= Serialize::getDecodeLocale($forum['name']) ?></strong> <sup class="text-warning">[<?= $forum['order_id'] ?>]</sup>
-                        <p><?= Serialize::getDecodeLocale($forum['snippet']) ?></p>
+                        <strong><?= App::$Translate->getLocaleText($forum['name']) ?></strong> <sup class="text-warning">[<?= $forum['order_id'] ?>]</sup>
+                        <p><?= App::$Translate->getLocaleText($forum['snippet']) ?></p>
                         <?php if (Obj::isArray($forum['depend']) && count($forum['depend']) > 0): ?>
                             <?php foreach ($forum['depend'] as $depend): ?>
-                                <span class="label label-success"><?= Serialize::getDecodeLocale($depend['name']) ?>&nbsp;<sup>[<?= $depend['order_id'] ?>]</sup>
+                                <span class="label label-success"><?= App::$Translate->getLocaleText($depend['name']) ?>&nbsp;<sup>[<?= $depend['order_id'] ?>]</sup>
                                     <a href="<?= Url::to('forum/updateforum', $depend['id']) ?>"><i class="fa fa-pencil"></i></a>&nbsp;
                                     <a href="<?= Url::to('forum/deleteforum', $depend['id']) ?>"><i class="fa fa-trash-o"></i></a>
                                 </span>&nbsp;

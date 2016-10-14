@@ -8,6 +8,10 @@ use Apps\ActiveRecord\ForumPost;
 use Apps\ActiveRecord\ForumThread;
 use Ffcms\Core\Arch\Model;
 
+/**
+ * Class FormForumDelete. Business logic for forum delete action
+ * @package Apps\Model\Admin\Forum
+ */
 class FormForumDelete extends Model
 {
     public $name;

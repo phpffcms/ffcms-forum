@@ -1,7 +1,6 @@
 <?php
 
 use Ffcms\Core\Helper\Date;
-use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Simplify;
 use Ffcms\Core\Helper\Text;
 use Ffcms\Core\Helper\Url;
@@ -11,14 +10,14 @@ use Ffcms\Core\Helper\Url;
 /** @var \Apps\ActiveRecord\ForumThread $threadRecords */
 /** @var \Ffcms\Core\Helper\HTML\SimplePagination $pagination */
 
-$this->title = Serialize::getDecodeLocale($forumRecord['name']);
+$this->title = \App::$Translate->getLocaleText($forumRecord['name']);
 
 $bread = [];
 $bread[Url::to('/')] = __('Home');
 $bread[Url::to('forum/index')] = __('Forum index');
 $parentRecord = $forumRecord->findParent();
 if ($parentRecord !== null) {
-    $bread[Url::to('forum/viewforum', $parentRecord['id'])] = Serialize::getDecodeLocale($parentRecord['name']);
+    $bread[Url::to('forum/viewforum', $parentRecord['id'])] = \App::$Translate->getLocaleText($parentRecord['name']);
 }
 
 $bread[] = $this->title;
@@ -30,7 +29,7 @@ $this->breadcrumbs = $bread;
 ?>
 <?php if ($subforumRecords !== null && $subforumRecords->count() > 0): ?>
     <div class="panel forum-panel panel-major">
-        <div class="panel-heading"><?= __('Subforums for: %name%', ['name' => Serialize::getDecodeLocale($forumRecord['name'])]) ?></div>
+        <div class="panel-heading"><?= __('Subforums for: %name%', ['name' => \App::$Translate->getLocaleText($forumRecord['name'])]) ?></div>
 
         <div class="panel-body category-body">
             <div class="category-meta">
@@ -50,13 +49,12 @@ $this->breadcrumbs = $bread;
                             <div class="col-md-11 col-sm-10 col-xs-10">
                                 <!-- forum title link-name -->
                                 <div class="forum-name">
-                                    <?= Url::link(['forum/viewforum', $forum['id']],
-                                        Serialize::getDecodeLocale($forum['name'])) ?>
+                                    <?= Url::link(['forum/viewforum', $forum['id']], App::$Translate->getLocaleText($forum['name'])) ?>
                                 </div>
 
                                 <!-- Forum Description -->
                                 <div class="forum-description">
-                                    <p><?= Serialize::getDecodeLocale($forum['snippet']) ?></p>
+                                    <p><?= App::$Translate->getLocaleText($forum['snippet']) ?></p>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +123,7 @@ $this->breadcrumbs = $bread;
 <div class="panel forum-panel">
     <div class="panel-heading">
         <?= $this->title ?>&nbsp;
-        <small style="font-weight: lighter"><?= Serialize::getDecodeLocale($forumRecord['snippet']) ?></small>
+        <small style="font-weight: lighter"><?= App::$Translate->getLocaleText($forumRecord['snippet']) ?></small>
     </div>
 
     <div class="panel-body forum-body">

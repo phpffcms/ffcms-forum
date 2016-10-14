@@ -12,7 +12,7 @@ $this->title = __('Thread status');
 $this->breadcrumbs = [
     Url::to('/') => __('Home'),
     Url::to('forum/index') => __('Forum index'),
-    Url::to('forum/viewforum', $forum['id']) => Serialize::getDecodeLocale($forum['name']),
+    Url::to('forum/viewforum', $forum['id']) => \App::$Translate->getLocaleText($forum['name']),
     __('Thread status')
 ];
 ?>

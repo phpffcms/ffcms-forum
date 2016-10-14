@@ -10,8 +10,6 @@ use Ffcms\Core\App;
 use Apps\ActiveRecord\ForumPost;
 use Ffcms\Core\Arch\Model;
 use Ffcms\Core\Exception\SyntaxException;
-use Ffcms\Core\Helper\Serialize;
-use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Interfaces\iUser;
 
 /**

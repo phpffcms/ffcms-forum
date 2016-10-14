@@ -39,6 +39,7 @@ $this->breadcrumbs = [
 
 <div class="col-md-offset-3 col-md-9">
     <?= $form->submitButton(__('Delete'), ['class' => 'btn btn-danger']) ?>
+    <?= Url::link(['forum/index'], __('Cancel'), ['class' => 'btn btn-default']) ?>
 </div>
 
 <?= $form->finish() ?>

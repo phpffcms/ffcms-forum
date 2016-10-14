@@ -6,9 +6,6 @@ namespace Apps\Model\Front\Forum;
 use Apps\ActiveRecord\ForumThread;
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Model;
-use Ffcms\Core\Helper\Serialize;
-use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Obj;
 
 class FormDeleteThread extends Model
 {

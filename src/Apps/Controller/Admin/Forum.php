@@ -6,9 +6,11 @@ use Apps\ActiveRecord\ForumCategory;
 use Apps\ActiveRecord\ForumItem;
 
 use Apps\ActiveRecord\Role;
+use Apps\Model\Admin\Forum\FormCategoryDelete;
 use Apps\Model\Admin\Forum\FormCategoryUpdate;
 use Apps\Model\Admin\Forum\FormForumDelete;
 use Apps\Model\Admin\Forum\FormForumUpdate;
+use Apps\Model\Admin\Forum\FormSettings;
 use Extend\Core\Arch\AdminController;
 use Apps\ActiveRecord\App as AppRecord;
 use Ffcms\Core\App;
@@ -157,6 +159,58 @@ class Forum extends AdminController
             'model' => $model
         ], $this->tplDir);
 
+    }
+
+    /**
+     * Delete forum category action
+     * @param int $id
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws NotFoundException
+     */
+    public function actionDeletecategory($id)
+    {
+        // find target category by id
+        $category = ForumCategory::find($id);
+        if ($category === null) {
+            throw new NotFoundException(__('Category not found'));
+        }
+
+        // initialize delete model
+        $model = new FormCategoryDelete($category);
+        if ($model->send() && $model->validate()) {
+            $model->make();
+            App::$Session->getFlashBag()->add('success', __('Category are successful removed'));
+            App::$Response->redirect('forum/index');
+        }
+
+        return $this->view->render('forum/delete_category', [
+            'model' => $model
+        ], $this->tplDir);
+    }
+
+    /**
+     * Show forum settings
+     * @return string
+     * @throws \Ffcms\Core\Exception\SyntaxException
+     * @throws \Ffcms\Core\Exception\NativeException
+     */
+    public function actionSettings()
+    {
+        // initialize settings model with default configs
+        $model = new FormSettings($this->getConfigs());
+        if ($model->send() && $model->validate()) {
+            $this->setConfigs($model->getAllProperties());
+            App::$Session->getFlashBag()->add('success', __('Settings is successful updated'));
+            App::$Response->redirect('forum/index');
+        }
+
+        // render view
+        return $this->view->render('forum/settings', [
+            'model' => $model,
+            'tplPath' => $this->tplDir
+        ], $this->tplDir);
     }
 
     /**

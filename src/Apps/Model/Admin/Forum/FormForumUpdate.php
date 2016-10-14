@@ -7,7 +7,6 @@ use Apps\ActiveRecord\ForumCategory;
 use Apps\ActiveRecord\ForumItem;
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Model;
-use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
@@ -44,8 +43,8 @@ class FormForumUpdate extends Model
      */
     public function before()
     {
-        $this->name = Serialize::decode($this->_forum->name);
-        $this->snippet = Serialize::decode($this->_forum->snippet);
+        $this->name = $this->_forum->name;
+        $this->snippet = $this->_forum->snippet;
         $this->orderId = $this->_forum->order_id;
         $this->categoryId = $this->_forum->category_id;
         $this->dependId = $this->_forum->depend_id;
@@ -92,7 +91,7 @@ class FormForumUpdate extends Model
     public function getIdCategoryArray()
     {
         foreach (ForumCategory::all() as $category) {
-            yield $category->id => Serialize::getDecodeLocale($category->name);
+            yield $category->id => $category->getLocaled('name');
         }
     }
 
@@ -157,8 +156,8 @@ class FormForumUpdate extends Model
         }
 
         // save properties to database
-        $this->_forum->name = Serialize::encode($this->name);
-        $this->_forum->snippet = Serialize::encode($this->snippet);
+        $this->_forum->name = $this->name;
+        $this->_forum->snippet = $this->snippet;
         $this->_forum->order_id = $this->orderId;
         $this->_forum->category_id = $this->categoryId;
         $this->_forum->depend_id = $this->dependId;

@@ -1,7 +1,6 @@
 <?php
 
 use Ffcms\Core\Helper\Date;
-use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Simplify;
 use Ffcms\Core\Helper\Url;
 
@@ -23,10 +22,10 @@ $breads[Url::to('/')] = __('Home');
 $breads[Url::to('forum/index')] = __('Forum index');
 
 if ($parentRecord !== null) {
-    $breads[Url::to('forum/viewforum', $parentRecord->id)] = Serialize::getDecodeLocale($parentRecord->name);
+    $breads[Url::to('forum/viewforum', $parentRecord->id)] = App::$Translate->getLocaleText($parentRecord->name);
 }
 
-$breads[Url::to('forum/viewforum', $forumRecord->id)] = Serialize::getDecodeLocale($forumRecord->name);
+$breads[Url::to('forum/viewforum', $forumRecord->id)] = App::$Translate->getLocaleText($forumRecord->name);
 
 $breads[] = __('Topic: %title%', ['title' => $threadRecord->title]);
 

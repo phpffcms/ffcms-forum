@@ -18,6 +18,16 @@ class ForumCategory extends ActiveModel
 {
     const CACHE_FULLTABLE_NAME = 'activerecord.forumcategory.all';
 
+    protected $casts = [
+        'name' => 'serialize',
+        'order_id' => 'integer'
+    ];
+
+    /**
+     * Get all rows
+     * @param array $columns
+     * @return \Illuminate\Database\Eloquent\Collection|mixed|static[]
+     */
     public static function all($columns = ['*'])
     {
         if (AppMain::$Memory->get(static::CACHE_FULLTABLE_NAME) !== null) {
