@@ -2,9 +2,10 @@
   "name": "phpffcms/ffcms-forum",
   "description": "FFCMS forum package",
   "type": "library",
-  "keywords": ["php", "ffcms", "app", "widget", "forum"],
+  "keywords": ["php", "ffcms", "app", "forum"],
   "homepage": "http://ffcms.org",
   "license": "MIT",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Pyatinskyi M.M.",
