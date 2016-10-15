@@ -90,8 +90,8 @@ class FormUpdateThread extends Model
      */
     public function make()
     {
-        $this->_thread->title = App::$Security->strip_tags($this->title);
-        $this->_thread->message = App::$Security->secureHtml($this->message);
+        $this->_thread->title = $this->title;
+        $this->_thread->message = $this->message;
         $this->_thread->save();
     }
 

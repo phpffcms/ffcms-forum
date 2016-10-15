@@ -84,14 +84,26 @@ class FormCreateThread extends Model
     }
 
     /**
+     * Declare property filtering types
+     * @return array
+     */
+    public function types()
+    {
+        return [
+            'title' => 'text',
+            'message' => 'html'
+        ];
+    }
+
+    /**
      * Save post in database and set new threadId
      */
     public function make()
     {
         // save new thread in forum_thread table
         $record = new ForumThread();
-        $record->title = App::$Security->strip_tags($this->title);
-        $record->message = App::$Security->secureHtml($this->message);
+        $record->title = $this->title;
+        $record->message = $this->message;
         $record->creator_id = $this->_user->getId();
         $record->forum_id = $this->_record->id;
         $record->lang = $this->_lang;

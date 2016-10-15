@@ -107,7 +107,7 @@ class FormForumUpdate extends Model
             $forums = $cat->getForums()->get();
             yield mt_rand(100, 100000) => '=== [' . $cat->getLocaled('name') . '] ===';
             foreach ($forums as $forum) {
-                if ($forum->id === $this->_forum->id) {
+                if ($forum->id === $this->_forum->id || (int)$forum->depend_id !== 0) {
                     continue;
                 }
                 yield $forum->id => ' > ' . $forum->getLocaled('name');

@@ -311,7 +311,7 @@ class Forum extends AdminController
         $now = Date::convertToDatetime(time(), Date::FORMAT_SQL_DATE);
         // insert default forum data
         App::$Database->connection()->table('forum_categories')->insert([
-            ['id' => 1, 'name' => Serialize::encode(['en' => 'General', 'ru' => 'Главная']), 'created_at' => $now, 'updated_at' => $now]
+            ['id' => 1, 'name' => Serialize::encode(['en' => 'General', 'ru' => 'Главная']), 'order_id' => '1', 'created_at' => $now, 'updated_at' => $now]
         ]);
 
         // add default forums
@@ -320,13 +320,15 @@ class Forum extends AdminController
                 'id' => 1,
                 'name' => Serialize::encode(['en' => 'News', 'ru' => 'Новости']),
                 'category_id' => 1,
-                'depend_id' => 0
+                'depend_id' => 0,
+                'order_id' => 1
             ],
             [
                 'id' => 2,
                 'name' => Serialize::encode(['en' => 'Subforum', 'ru' => 'Подфорум']),
                 'category_id' => 1,
-                'depend_id' => 1
+                'depend_id' => 1,
+                'order_id' => 2
             ]
         ]);
 
@@ -343,6 +345,15 @@ class Forum extends AdminController
             $moderRole->permissions .= ';forum/post;forum/thread;forum/edit;forum/delete;forum/close';
             $moderRole->save();
         }
+        // add admin permissions
+        App::$Properties->updateConfig('Permissions', [
+            'Admin/Forum/Index',
+            'Admin/Forum/Settings',
+            'Admin/Forum/Updatecategory',
+            'Admin/Forum/Deletecategory',
+            'Admin/Forum/Updateforum',
+            'Admin/Forum/Deleteforum',
+        ]);
     }
 
     public static function update($dbVersion)
