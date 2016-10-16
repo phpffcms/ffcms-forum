@@ -22,7 +22,7 @@ use Ffcms\Core\Helper\Type\Obj;
 
 class Forum extends AdminController
 {
-    const VERSION = 0.1;
+    const VERSION = '1.0.0';
 
     private $appRoot;
     private $tplDir;
@@ -245,7 +245,8 @@ class Forum extends AdminController
         $query->update([
             'name' => Serialize::encode($appData->name),
             'configs' => Serialize::encode($appData->configs),
-            'disabled' => 0
+            'disabled' => 0,
+            'version' => static::VERSION
         ]);
 
         // create forum categories table
