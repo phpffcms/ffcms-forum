@@ -31,7 +31,8 @@ class ForumItem extends ActiveModel
 {
     protected $casts = [
         'name' => 'serialize',
-        'snippet' => 'serialize'
+        'snippet' => 'serialize',
+        'category_id' => 'integer'
     ];
 
     /**

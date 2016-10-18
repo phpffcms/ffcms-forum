@@ -5,6 +5,8 @@ namespace Apps\ActiveRecord;
 
 use Ffcms\Core\Arch\ActiveModel;
 use Ffcms\Core\App as AppMain;
+use Ffcms\Core\Cache\MemoryObject;
+
 /**
  * Class ForumCategory. Active record model for table forum_categories
  * @package Apps\ActiveRecord
@@ -16,7 +18,6 @@ use Ffcms\Core\App as AppMain;
  */
 class ForumCategory extends ActiveModel
 {
-    const CACHE_FULLTABLE_NAME = 'activerecord.forumcategory.all';
 
     protected $casts = [
         'name' => 'serialize',
@@ -30,11 +31,13 @@ class ForumCategory extends ActiveModel
      */
     public static function all($columns = ['*'])
     {
-        if (AppMain::$Memory->get(static::CACHE_FULLTABLE_NAME) !== null) {
-            return AppMain::$Memory->get(static::CACHE_FULLTABLE_NAME);
+        $cacheName = 'activerecord.forumcategories.all.' . implode('.', $columns);
+        $records = MemoryObject::instance()->get($cacheName);
+        if ($records === null) {
+            $records = parent::all($columns);
+            MemoryObject::instance()->set($cacheName, $records);
         }
-        $records = parent::all($columns);
-        AppMain::$Memory->set(static::CACHE_FULLTABLE_NAME, $records);
+
         return $records;
     }
 
