@@ -45,7 +45,7 @@ class Forum extends FrontAppController
     {
         parent::before();
         // define application src root path
-        $this->appRoot = realpath(__DIR__ . './../../../');
+        $this->appRoot = realpath(__DIR__ . '/../../../');
         $this->tplDir = $this->appRoot . '/Apps/View/Front/default';
         // load internalization package for current lang
         $langFile = $this->appRoot . '/I18n/Front/' . App::$Request->getLanguage() . '/Forum.php';

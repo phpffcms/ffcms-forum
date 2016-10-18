@@ -34,7 +34,7 @@ class Forum extends ApiController
     public function before()
     {
         // define application src root path
-        $path = realpath(__DIR__ . './../../../');
+        $path = realpath(__DIR__ . '/../../../');
         // load internalization package for current lang
         $langFile = $path . '/I18n/Api/' . App::$Request->getLanguage() . '/Forum.php';
         if (App::$Request->getLanguage() !== 'en' && File::exist($langFile)) {
