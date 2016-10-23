@@ -53,7 +53,7 @@ class Forum extends FrontAppController
             App::$Translate->append($langFile);
         }
         // add global css link
-        App::$Alias->setCustomLibrary('css', '/vendor/phpffcms/ffcms-forum/src/Apps/View/Front/default/asset/css/forum.css');
+        App::$Alias->setCustomLibrary('css', '/vendor/phpffcms/ffcms-forum/src/Apps/View/Front/default/assets/css/forum.css');
         // set online marker cookie for guest's
         if (!App::$User->isAuth()) {
             $token = App::$Request->cookies->get('forum_token', null);
