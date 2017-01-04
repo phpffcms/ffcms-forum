@@ -37,8 +37,8 @@ $this->breadcrumbs = $breads;
 
 <div class="panel topic-panel">
     <div class="panel-heading topic-head">
-        <?= (bool)$threadRecord->important ? '<i class="fa fa-star-o fa-lg"></i>' : null ?>
-        <?= (bool)$threadRecord->closed ? '<i class="fa fa-times fa-lg"></i>' : null ?>
+        <?= (bool)$threadRecord->important ? '<i class="glyphicon glyphicon-star"></i>' : null ?>
+        <?= (bool)$threadRecord->closed ? '<i class="glyphicon glyphicon-remove-circle"></i>' : null ?>
         <?= $threadRecord->title ?>
     </div>
     <div class="panel-body topic-body">
@@ -55,7 +55,7 @@ $this->breadcrumbs = $breads;
                 <div class="author-posts"><?= __('Posts: %post%', ['post' => (int)$user->getProfile()->forum_post]) ?></div>
                 <div class="author-pm">
                     <?php if (\App::$User->isAuth() && $user->getId() !== \App::$User->identity()->getId()): ?>
-                        <a href="<?= Url::to('profile/messages', null, null, ['newdialog' => $user->getId()]) ?>"><i class="fa fa-envelope"></i></a>
+                        <a href="<?= Url::to('profile/messages', null, null, ['newdialog' => $user->getId()]) ?>"><i class="glyphicon glyphicon-envelope"></i></a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -79,7 +79,7 @@ $this->breadcrumbs = $breads;
                 <div class="post-footer clearfix">
                     <div class="pull-left" style="padding-left: 10px;">
                         <a href="#fanswer" class="label label-primary make-quote" id="quote-post-0">
-                            <i class="fa fa-quote-right fa-lg"></i>
+                            <i class="glyphicon glyphicon-forward glyphicon-2x"></i>
                         </a>
                     </div>
                     <!-- Report/Edit/Delete/Quote Post-->
@@ -119,7 +119,7 @@ $this->breadcrumbs = $breads;
                     <div class="author-posts"><?= __('Posts: %post%', ['post' => (int)$user->getProfile()->forum_post]) ?></div>
                     <div class="author-pm">
                         <?php if (\App::$User->isAuth() && $user->getId() !== \App::$User->identity()->getId()): ?>
-                            <a href="<?= Url::to('profile/messages', null, null, ['newdialog' => $user->getId()]) ?>"><i class="fa fa-envelope"></i></a>
+                            <a href="<?= Url::to('profile/messages', null, null, ['newdialog' => $user->getId()]) ?>"><i class="glyphicon glyphicon-envelope"></i></a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ $this->breadcrumbs = $breads;
                             <div class="pull-left" style="padding-left: 10px;">
                                 <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/post')): ?>
                                     <a href="#fanswer" class="label label-default make-quote" id="quote-post-<?= $post->id ?>">
-                                        <i class="fa fa-quote-right fa-lg"></i>
+                                        <i class="glyphicon glyphicon-forward glyphicon-2x"></i>
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -191,7 +191,7 @@ $this->breadcrumbs = $breads;
         <div class="col-md-10 col-sm-9 col-xs-12 col-md-offset-2 col-sm-offset-3">
             <?= Ffcms\Widgets\Ckeditor\Ckeditor::widget(['targetClass' => 'wysiwyg', 'config' => 'config-small', 'jsConfig' => ['height' => '150']]) ?>
             <textarea class="form-control wysiwyg" id="fanswer"></textarea>
-            <button class="btn btn-success" id="send-push"><i class="fa fa-reply"></i> <?= __('Reply') ?></button>
+            <button class="btn btn-success" id="send-push"><i class="glyphicon glyphicon-fire"></i> <?= __('Reply') ?></button>
         </div>
     </div>
 <?php endif; ?>
@@ -228,7 +228,7 @@ $this->breadcrumbs = $breads;
             <div class="post-footer clearfix">
                 <div class="post-menu" style="padding-left: 10px;">
                     <a href="#fanswer" class="label label-default make-quote" id="quote-post-new-id">
-                        <i class="fa fa-quote-right fa-lg"></i></a>
+                        <i class="glyphicon glyphicon-forward glyphicon-2x"></i></a>
                 </div>
             </div>
         </div>
@@ -255,104 +255,102 @@ $this->breadcrumbs = $breads;
 </div>
 
 <script>
-    window.jQ.push(function() {
-        $(function(){
-            // post add/delete vars
-            var threadId = <?= $threadRecord->id ?>;
-            var isLastPage = <?= (int)$isLastPage ?>;
-            var tpl = $('#post-template').clone().removeClass('hidden');
+    document.ready(function () {
+        // post add/delete vars
+        var threadId = <?= $threadRecord->id ?>;
+        var isLastPage = <?= (int)$isLastPage ?>;
+        var tpl = $('#post-template').clone().removeClass('hidden');
 
-            // post edit vars
-            var msg;
-            var postId = 0;
+        // post edit vars
+        var msg;
+        var postId = 0;
 
-            // add new post
-            $('#send-push').click(function(){
-                var msg = $('#fanswer').val();
-                if (msg.length < 10) {
-                    alert('<?= __('Message is too short') ?>');
+        // add new post
+        $('#send-push').click(function () {
+            var msg = $('#fanswer').val();
+            if (msg.length < 10) {
+                alert('<?= __('Message is too short') ?>');
+                return;
+            }
+
+            $.post(script_url + '/api/forum/createpost/' + threadId + '?lang=' + script_lang, {message: msg}, function (resp) {
+                if (resp.status !== 1) {
+                    alert(resp.message);
                     return;
                 }
 
-                $.post(script_url+'/api/forum/createpost/'+threadId+'?lang='+script_lang, {message: msg}, function(resp){
-                    if (resp.status !== 1) {
-                        alert(resp.message);
-                        return;
-                    }
-
-                    if (isLastPage == 0) {
-                        window.location.replace('<?= Url::to('forum/lastpost', $threadRecord->id) ?>');
-                        return;
-                    }
-
-                    var answer = tpl.clone();
-                    answer.find('#post-new-id').attr('id', 'post-' + resp.data.id);
-                    answer.find('#quote-post-new-id').attr('id', 'quote-post-'+resp.data.id);
-                    answer.find('#post-user-name').html(resp.data.user.link).removeAttr('id');
-                    answer.find('#post-user-group').text(resp.data.user.group).removeAttr('id');
-                    answer.find('#post-user-joindate').text('<?= __('Joined') ?>: '+resp.data.user.created_at).removeAttr('id');
-                    answer.find('#post-user-avatar').attr('src', resp.data.user.avatar).removeAttr('id');
-                    answer.find('#post-user-posts').text('<?= __('Posts') ?>: '+resp.data.user.posts).removeAttr('id');
-                    answer.find('#post-created-at').text(resp.data.created_at).removeAttr('id');
-                    answer.find('.post-message').html(resp.data.message);
-
-                    $('#new-post-object').append(answer.html());
-
-                    CKEDITOR.instances.fanswer.setData('');
-                }, 'json');
-            });
-
-            // quote exist post
-            $(document).on("click", ".make-quote", function() {
-                var postId = $(this).attr('id').replace('quote-post-', '');
-                var quoteMsg = $('#post-'+postId).find('.post-message').html();
-                quoteMsg = '<blockquote>' + quoteMsg + '</blockquote><p>&nbsp;</p>';
-                CKEDITOR.instances.fanswer.insertHtml(quoteMsg);
-            });
-
-            // delete post via ajax
-            $('.delete-post-trigger').click(function(){
-                if (!confirm('<?= __('Are you sure to delete this post?') ?>')) {
-                    return false;
-                }
-                var postId = $(this).attr('id').replace('delete-post-', '');
-                $.getJSON(script_url+'/api/forum/deletepost/'+postId+'?lang='+script_lang, function(resp){
-                    if (resp.status !== 1) {
-                        alert(resp.message);
-                        return;
-                    }
-
-                    $('#post-'+postId).fadeOut(400, function(){
-                        $(this).remove();
-                    })
-                });
-            });
-
-            // edit post - show edit form on pop-up modal
-            $('.edit-post-trigger').click(function() {
-                postId = $(this).attr('id').replace('edit-post-', '');
-                msg = $('#post-message-'+postId);
-                CKEDITOR.instances.fedit.setData(msg.html());
-                $('#post-edit-modal').modal('show');
-            });
-
-            // save edited post data via ajax
-            $('#save-edit-post').on('click', function() {
-                var editedMsg = $('#fedit').val();
-                if (editedMsg === null || editedMsg.length < 10) {
+                if (isLastPage == 0) {
+                    window.location.replace('<?= Url::to('forum/lastpost', $threadRecord->id) ?>');
                     return;
                 }
-                $.post(script_url+'/api/forum/editpost/'+postId+'?lang='+script_lang, {message: editedMsg}, function(resp){
-                    if (resp.status !== 1) {
-                        alert(resp.message);
-                        return null;
-                    }
 
-                    // update displayed msg
-                    msg.html(resp.data.message);
-                    msg.fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
-                    $('#post-edit-modal').modal('hide');
-                });
+                var answer = tpl.clone();
+                answer.find('#post-new-id').attr('id', 'post-' + resp.data.id);
+                answer.find('#quote-post-new-id').attr('id', 'quote-post-' + resp.data.id);
+                answer.find('#post-user-name').html(resp.data.user.link).removeAttr('id');
+                answer.find('#post-user-group').text(resp.data.user.group).removeAttr('id');
+                answer.find('#post-user-joindate').text('<?= __('Joined') ?>: ' + resp.data.user.created_at).removeAttr('id');
+                answer.find('#post-user-avatar').attr('src', resp.data.user.avatar).removeAttr('id');
+                answer.find('#post-user-posts').text('<?= __('Posts') ?>: ' + resp.data.user.posts).removeAttr('id');
+                answer.find('#post-created-at').text(resp.data.created_at).removeAttr('id');
+                answer.find('.post-message').html(resp.data.message);
+
+                $('#new-post-object').append(answer.html());
+
+                CKEDITOR.instances.fanswer.setData('');
+            }, 'json');
+        });
+
+        // quote exist post
+        $(document).on("click", ".make-quote", function () {
+            var postId = $(this).attr('id').replace('quote-post-', '');
+            var quoteMsg = $('#post-' + postId).find('.post-message').html();
+            quoteMsg = '<blockquote>' + quoteMsg + '</blockquote><p>&nbsp;</p>';
+            CKEDITOR.instances.fanswer.insertHtml(quoteMsg);
+        });
+
+        // delete post via ajax
+        $('.delete-post-trigger').click(function () {
+            if (!confirm('<?= __('Are you sure to delete this post?') ?>')) {
+                return false;
+            }
+            var postId = $(this).attr('id').replace('delete-post-', '');
+            $.getJSON(script_url + '/api/forum/deletepost/' + postId + '?lang=' + script_lang, function (resp) {
+                if (resp.status !== 1) {
+                    alert(resp.message);
+                    return;
+                }
+
+                $('#post-' + postId).fadeOut(400, function () {
+                    $(this).remove();
+                })
+            });
+        });
+
+        // edit post - show edit form on pop-up modal
+        $('.edit-post-trigger').click(function () {
+            postId = $(this).attr('id').replace('edit-post-', '');
+            msg = $('#post-message-' + postId);
+            CKEDITOR.instances.fedit.setData(msg.html());
+            $('#post-edit-modal').modal('show');
+        });
+
+        // save edited post data via ajax
+        $('#save-edit-post').on('click', function () {
+            var editedMsg = $('#fedit').val();
+            if (editedMsg === null || editedMsg.length < 10) {
+                return;
+            }
+            $.post(script_url + '/api/forum/editpost/' + postId + '?lang=' + script_lang, {message: editedMsg}, function (resp) {
+                if (resp.status !== 1) {
+                    alert(resp.message);
+                    return null;
+                }
+
+                // update displayed msg
+                msg.html(resp.data.message);
+                msg.fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                $('#post-edit-modal').modal('hide');
             });
         });
     });

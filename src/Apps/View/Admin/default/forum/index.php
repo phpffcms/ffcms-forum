@@ -34,8 +34,8 @@ if (!Obj::isArray($tree)) {
     <div class="panel panel-default">
         <div class="panel-heading">
             <?= App::$Translate->getLocaleText($category['name']) ?> <sup class="text-success">[<?= $category['order_id'] ?>]</sup>
-            <a href="<?= Url::to('forum/updatecategory', $category['id']) ?>"><i class="fa fa-pencil"></i></a>
-            <a href="<?= Url::to('forum/deletecategory', $category['id']) ?>"><i class="fa fa-trash-o"></i></a>
+            <a href="<?= Url::to('forum/updatecategory', $category['id']) ?>"><i class="glyphicon glyphicon-pencil"></i></a>
+            <a href="<?= Url::to('forum/deletecategory', $category['id']) ?>"><i class="glyphicon glyphicon-trash"></i></a>
         </div>
         <div class="panel-body">
         <?php if (!Obj::isArray($category['forums']) || count($category['forums']) < 1): ?>
@@ -49,17 +49,17 @@ if (!Obj::isArray($tree)) {
                         <?php if (Obj::isArray($forum['depend']) && count($forum['depend']) > 0): ?>
                             <?php foreach ($forum['depend'] as $depend): ?>
                                 <span class="label label-success"><?= App::$Translate->getLocaleText($depend['name']) ?>&nbsp;<sup>[<?= $depend['order_id'] ?>]</sup>
-                                    <a href="<?= Url::to('forum/updateforum', $depend['id']) ?>"><i class="fa fa-pencil"></i></a>&nbsp;
-                                    <a href="<?= Url::to('forum/deleteforum', $depend['id']) ?>"><i class="fa fa-trash-o"></i></a>
+                                    <a href="<?= Url::to('forum/updateforum', $depend['id']) ?>"><i class="glyphicon glyphicon-pencil"></i></a>&nbsp;
+                                    <a href="<?= Url::to('forum/deleteforum', $depend['id']) ?>"><i class="glyphicon glyphicon-trash"></i></a>
                                 </span>&nbsp;
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                     <div class="col-md-3">
                         <div class="text-center">
-                            <a href="<?= Url::to('forum/updateforum', null, null, ['parent' => $forum['id']]) ?>"><i class="fa fa-plus-circle fa-lg"></i></a>&nbsp;
-                            <a href="<?= Url::to('forum/updateforum', $forum['id']) ?>"><i class="fa fa-pencil fa-lg"></i></a>&nbsp;
-                            <a href="<?= Url::to('forum/deleteforum', $forum['id']) ?>"><i class="fa fa-trash-o fa-lg"></i></a>
+                            <a href="<?= Url::to('forum/updateforum', null, null, ['parent' => $forum['id']]) ?>"><i class="glyphicon glyphicon-plus"></i></a>&nbsp;
+                            <a href="<?= Url::to('forum/updateforum', $forum['id']) ?>"><i class="glyphicon glyphicon-pencil"></i></a>&nbsp;
+                            <a href="<?= Url::to('forum/deleteforum', $forum['id']) ?>"><i class="glyphicon glyphicon-trash"></i></a>
                         </div>
                     </div>
                 </div>

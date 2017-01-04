@@ -44,7 +44,7 @@ $this->breadcrumbs = $bread;
                     <div class="col-md-5 col-sm-5 col-xs-8 forum-info">
                         <div class="row">
                             <div class="col-md-1 col-sm-2 col-xs-2 forum-status">
-                                <i class="fa fa-comments-o forum-read"></i>
+                                <i class="glyphicon glyphicon-comment forum-read"></i>
                             </div>
                             <div class="col-md-11 col-sm-10 col-xs-10">
                                 <!-- forum title link-name -->
@@ -110,7 +110,7 @@ $this->breadcrumbs = $bread;
     <div class="col-md-6">
         <div class="pull-right">
             <a href="<?= Url::to('forum/createthread', $forumRecord['id']) ?>" class="btn btn-success btn-sm">
-                <i class="fa fa-plus"></i> <?= __('New topic') ?>
+                <i class="glyphicon glyphicon-plus"></i> <?= __('New topic') ?>
             </a>
         </div>
     </div>
@@ -140,7 +140,7 @@ $this->breadcrumbs = $bread;
                     <div class="col-md-5 col-sm-5 col-xs-8 topic-info">
                         <div class="row">
                             <div class="col-md-1 col-sm-2 col-xs-2 topic-status">
-                                <span class="fa <?= ((bool)$thread->important ? 'fa-star' : ((bool)$thread->closed ? 'fa-times-circle-o' : 'fa-comment-o')); ?> topic-read"></span>
+                                <i class="glyphicon <?= ((bool)$thread->important ? 'glyphicon-star' : ((bool)$thread->closed ? 'glyphicon-remove-circle' : 'glyphicon-comment')); ?> topic-read"></i>
                             </div>
                             <div class="col-md-11 col-sm-10 col-xs-10">
                                 <div class="topic-name">

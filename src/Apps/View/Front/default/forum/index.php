@@ -54,7 +54,7 @@ if (!Obj::isArray($tree) || count($tree) < 1) {
                     <div class="col-md-5 col-sm-5 col-xs-8 forum-info">
                         <div class="row">
                             <div class="col-md-1 col-sm-2 col-xs-2 forum-status">
-                                <i class="fa fa-comments-o forum-read"></i>
+                                <i class="glyphicon glyphicon-comment forum-read"></i>
                             </div>
                             <div class="col-md-11 col-sm-10 col-xs-10">
                                 <!-- forum title link-name -->
@@ -72,7 +72,7 @@ if (!Obj::isArray($tree) || count($tree) < 1) {
                                 <div>
                                     <ul class="list-inline forum-sublist">
                                         <?php foreach ($forum['depend'] as $sub): ?>
-                                        <li><i class="fa fa-folder-open-o"></i> <?= Url::link(['forum/viewforum', $sub['id']], \App::$Translate->getLocaleText($sub['name'])) ?></li>
+                                        <li><i class="glyphicon glyphicon-folder-open"></i> <?= Url::link(['forum/viewforum', $sub['id']], \App::$Translate->getLocaleText($sub['name'])) ?></li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
