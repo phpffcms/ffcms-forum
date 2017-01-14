@@ -19,6 +19,7 @@ use Ffcms\Core\Helper\Date;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Obj;
+use Ffcms\Core\Managers\MigrationsManager;
 
 class Forum extends AdminController
 {
@@ -237,11 +238,11 @@ class Forum extends AdminController
 
         // get current app row from db (like SELECT ... WHERE type='app' and sys_name='Demoapp')
         $query = AppRecord::where('type', '=', 'app')->where('sys_name', '=', 'Forum');
-
         if ($query->count() !== 1) {
             return;
         }
 
+        // enable application and set name, configs, version
         $query->update([
             'name' => Serialize::encode($appData->name),
             'configs' => Serialize::encode($appData->configs),
@@ -249,88 +250,16 @@ class Forum extends AdminController
             'version' => static::VERSION
         ]);
 
-        // create forum categories table
-        App::$Database->schema()->create('forum_categories', function ($table) {
-            $table->increments('id');
-            $table->string('name', 2048);
-            $table->integer('order_id')->unsigned();
-            $table->timestamps();
-        });
-
-        // create forum items table schema
-        App::$Database->schema()->create('forum_items', function ($table) {
-            $table->increments('id');
-            $table->string('name', 2048);
-            $table->text('snippet')->nullable();
-            $table->integer('order_id')->unsigned()->default(1);
-            $table->integer('category_id')->unsigned();
-            $table->integer('depend_id')->unsigned()->default(0);
-            $table->integer('thread_count')->unsigned()->default(0);
-            $table->integer('post_count')->unsigned()->default(0);
-            $table->string('updater_id', 1024)->nullable();
-            $table->string('updated_thread', 1024)->nullable();
-            $table->timestamps();
-        });
-
-        // create forum threads table schema
-        App::$Database->schema()->create('forum_threads', function ($table) {
-            $table->increments('id');
-            $table->string('title', 2048);
-            $table->text('message');
-            $table->integer('creator_id')->unsigned();
-            $table->integer('updater_id')->unsigned();
-            $table->integer('forum_id')->unsigned();
-            $table->string('lang', 16)->defaunt('en');
-            $table->integer('post_count')->unsigned();
-            $table->integer('view_count')->unsigned();
-            $table->boolean('important')->default(false);
-            $table->boolean('closed')->default(false);
-            $table->timestamps();
-        });
-
-        // create forum posts table schema
-        App::$Database->schema()->create('forum_posts', function ($table) {
-            $table->increments('id');
-            $table->text('message');
-            $table->integer('thread_id')->unsigned();
-            $table->integer('user_id')->unsigned();
-            $table->string('lang', 16)->default('en');
-            $table->timestamps();
-        });
-
-        App::$Database->schema()->create('forum_onlines', function ($table) {
-            $table->increments('id');
-            $table->integer('user_id')->unsigned()->default(0);
-            $table->string('token', 1024)->nullable();
-            $table->integer('active_time')->default(0);
-        });
-
-        App::$Database->schema()->table('profiles', function ($table) {
-            $table->integer('forum_post')->unsigned()->default(0);
-        });
-
-        $now = Date::convertToDatetime(time(), Date::FORMAT_SQL_DATE);
-        // insert default forum data
-        App::$Database->connection()->table('forum_categories')->insert([
-            ['id' => 1, 'name' => Serialize::encode(['en' => 'General', 'ru' => 'Главная']), 'order_id' => '1', 'created_at' => $now, 'updated_at' => $now]
-        ]);
-
-        // add default forums
-        App::$Database->connection()->table('forum_items')->insert([
-            [
-                'id' => 1,
-                'name' => Serialize::encode(['en' => 'News', 'ru' => 'Новости']),
-                'category_id' => 1,
-                'depend_id' => 0,
-                'order_id' => 1
-            ],
-            [
-                'id' => 2,
-                'name' => Serialize::encode(['en' => 'Subforum', 'ru' => 'Подфорум']),
-                'category_id' => 1,
-                'depend_id' => 1,
-                'order_id' => 2
-            ]
+        // apply migrations
+        $root = realpath(__DIR__ . '/../../../');
+        $migrations = new MigrationsManager($root . '/Private/Migrations');
+        $migrations->makeUp([
+            'altercolumn_forumprofile_table-2017-01-05-18-25-39.php',
+            'install_forumcategories_table-2017-01-05-18-09-48.php',
+            'install_forumitems_table-2017-01-05-18-19-22.php',
+            'install_forumonlines_table-2017-01-05-18-24-21.php',
+            'install_forumposts_table-2017-01-05-18-23-20.php',
+            'install_forumthreads_table-2017-01-05-18-21-41.php'
         ]);
 
         // add user permissions

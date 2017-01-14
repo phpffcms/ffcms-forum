@@ -68,7 +68,7 @@ class EntityForumSummary extends Model
     private function buildOnlineList()
     {
         $onlineUsersQuery = ForumOnline::where('active_time', '>=', $this->_now)->where('user_id', '>', 0)->get(['user_id'])->toArray();
-        $userIds = Arr::ploke('user_id', $onlineUsersQuery);
+        $userIds = Arr::pluck('user_id', $onlineUsersQuery);
         $profileRecords = Profile::whereIn('user_id', $userIds)->take(static::USER_COUNT_LIMIT)->get();
         foreach ($profileRecords as $record) {
             /** @var Profile $record */

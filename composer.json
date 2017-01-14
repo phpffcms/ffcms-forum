@@ -5,7 +5,6 @@
   "keywords": ["php", "ffcms", "app", "forum"],
   "homepage": "http://ffcms.org",
   "license": "MIT",
-  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Pyatinskyi M.M.",
