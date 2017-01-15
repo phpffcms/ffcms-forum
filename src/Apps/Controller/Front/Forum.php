@@ -37,6 +37,7 @@ class Forum extends FrontAppController
 {
     private $appRoot;
     private $tplDir;
+    private $viewUri;
 
     /**
      * Initialize app path root, local template and localization
@@ -47,13 +48,17 @@ class Forum extends FrontAppController
         // define application src root path
         $this->appRoot = realpath(__DIR__ . '/../../../');
         $this->tplDir = $this->appRoot . '/Apps/View/Front/default';
+        $this->viewUri = App::$Alias->currentViewUrl;
+        if ($this->appRoot !== root) {
+            $this->viewUri = '/vendor/phpffcms/ffcms-forum/src/Apps/View/Front/default';
+        }
         // load internalization package for current lang
         $langFile = $this->appRoot . '/I18n/Front/' . App::$Request->getLanguage() . '/Forum.php';
         if (App::$Request->getLanguage() !== 'en' && File::exist($langFile)) {
             App::$Translate->append($langFile);
         }
         // add global css link
-        App::$Alias->setCustomLibrary('css', '/vendor/phpffcms/ffcms-forum/src/Apps/View/Front/default/assets/css/forum.css');
+        App::$Alias->setCustomLibrary('css', $this->viewUri . '/assets/css/forum.css');
         // set online marker cookie for guest's
         if (!App::$User->isAuth()) {
             $token = App::$Request->cookies->get('forum_token', null);
