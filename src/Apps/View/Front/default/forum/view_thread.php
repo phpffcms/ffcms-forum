@@ -255,7 +255,7 @@ $this->breadcrumbs = $breads;
 </div>
 
 <script>
-    document.ready(function () {
+    $(document).ready(function () {
         // post add/delete vars
         var threadId = <?= $threadRecord->id ?>;
         var isLastPage = <?= (int)$isLastPage ?>;
