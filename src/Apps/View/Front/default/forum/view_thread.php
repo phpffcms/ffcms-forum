@@ -79,7 +79,7 @@ $this->breadcrumbs = $breads;
                 <div class="post-footer clearfix">
                     <div class="pull-left" style="padding-left: 10px;">
                         <a href="#fanswer" class="label label-primary make-quote" id="quote-post-0">
-                            <i class="glyphicon glyphicon-forward glyphicon-2x"></i>
+                            <i class="glyphicon glyphicon-forward"></i>
                         </a>
                     </div>
                     <!-- Report/Edit/Delete/Quote Post-->
@@ -159,7 +159,7 @@ $this->breadcrumbs = $breads;
                             <div class="pull-left" style="padding-left: 10px;">
                                 <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/post')): ?>
                                     <a href="#fanswer" class="label label-default make-quote" id="quote-post-<?= $post->id ?>">
-                                        <i class="glyphicon glyphicon-forward glyphicon-2x"></i>
+                                        <i class="glyphicon glyphicon-forward"></i>
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -228,7 +228,7 @@ $this->breadcrumbs = $breads;
             <div class="post-footer clearfix">
                 <div class="post-menu" style="padding-left: 10px;">
                     <a href="#fanswer" class="label label-default make-quote" id="quote-post-new-id">
-                        <i class="glyphicon glyphicon-forward glyphicon-2x"></i></a>
+                        <i class="glyphicon glyphicon-forward"></i></a>
                 </div>
             </div>
         </div>
