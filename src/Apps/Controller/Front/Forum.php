@@ -66,10 +66,10 @@ class Forum extends FrontAppController
                 $token = Str::randomLatinNumeric(mt_rand(32, 128));
                 App::$Response->headers->setCookie(new Cookie('forum_token', $token, strtotime('+1 month')));
             }
-            ForumOnline::refresh($token);
+            ForumOnline::updateOnlineStatus($token);
         } else {
             $user = App::$User->identity();
-            ForumOnline::refresh(null, $user->getId());
+            ForumOnline::updateOnlineStatus(null, $user->getId());
         }
     }
 

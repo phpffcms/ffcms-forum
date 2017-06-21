@@ -22,7 +22,7 @@ class ForumOnline extends ActiveModel
      * @param string|null $token
      * @param int $userId
      */
-    public static function refresh($token = null, $userId = 0)
+    public static function updateOnlineStatus($token = null, $userId = 0)
     {
         $record = null;
         if ($token === null && $userId === 0) {
