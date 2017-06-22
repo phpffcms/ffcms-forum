@@ -49,7 +49,11 @@ $this->breadcrumbs = $breads;
                 <div class="author-name">
                     <div class="h4"><?= Simplify::parseUserLink($threadRecord->creator_id) ?></div>
                 </div>
-                <div class="author-title"><div class="h5"><?= $user->getRole()->name ?></div></div>
+                <div class="author-title">
+                    <div class="h5">
+                        <span style="color: <?= $user->getRole()->color ?>"><?= $user->getRole()->name ?></span>
+                    </div>
+                </div>
                 <div class="author-avatar"><img src="<?= $user->getProfile()->getAvatarUrl('small') ?>" alt="User avatar"></div>
                 <div class="author-registered"><?= __('Joined: %date%', ['date' => Date::convertToDatetime($user->created_at, 'm.Y')]) ?></div>
                 <div class="author-posts"><?= __('Posts: %post%', ['post' => (int)$user->getProfile()->forum_post]) ?></div>
@@ -113,7 +117,9 @@ $this->breadcrumbs = $breads;
                     <div class="author-name">
                         <div class="h4"><?= Simplify::parseUserLink($user->getId()) ?></div>
                     </div>
-                    <div class="author-title"><div class="h5"><?= $user->getRole()->name ?></div></div>
+                    <div class="author-title">
+                        <div class="h5"><span style="color: <?= $user->getRole()->color ?>"><?= $user->getRole()->name ?></span></div>
+                    </div>
                     <div class="author-avatar"><img src="<?= $user->getProfile()->getAvatarUrl('small') ?>" alt="User avatar"></div>
                     <div class="author-registered"><?= __('Joined: %date%', ['date' => Date::convertToDatetime($user->created_at, Date::FORMAT_TO_DAY)]) ?></div>
                     <div class="author-posts"><?= __('Posts: %post%', ['post' => (int)$user->getProfile()->forum_post]) ?></div>
