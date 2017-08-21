@@ -168,7 +168,11 @@ class Forum extends FrontAppController
         ]);
 
         // build currently limited treads to result object
-        $threadRecords = $threadQuery->skip($page * $threadPerPage)->take($threadPerPage)->orderBy('important', 'DESC')->orderBy('updated_at', 'DESC')->get();
+        $threadRecords = $threadQuery->skip($page * $threadPerPage)
+            ->take($threadPerPage)
+            ->orderBy('important', 'DESC')
+            ->orderBy('update_time', 'DESC')
+            ->get();
 
         return $this->view->render('forum/view_forum', [
             'tplDir' => $this->tplDir,
@@ -195,6 +199,7 @@ class Forum extends FrontAppController
         }
 
         // try to find forum by id
+        /** @var ForumItem $forumRecord */
         $forumRecord = ForumItem::find($forumId);
         if ($forumRecord === null) {
             throw new NotFoundException(__('Forum with id %id% is not found', ['id' => (int)$forumId]));
@@ -485,7 +490,10 @@ class Forum extends FrontAppController
     public function actionStream()
     {
         // get last updated threads as object
-        $records = ForumThread::where('lang', App::$Request->getLanguage())->orderBy('updated_at', 'DESC')->take(20)->get();
+        $records = ForumThread::where('lang', App::$Request->getLanguage())
+            ->orderBy('update_time', 'DESC')
+            ->take(20)
+            ->get();
 
         // render response
         return $this->view->render('forum/stream', [

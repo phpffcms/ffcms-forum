@@ -95,6 +95,7 @@ class Forum extends ApiController
         $post->thread_id = (int)$threadId;
         $post->user_id = $user->getId();
         $post->lang = App::$Request->getLanguage();
+        $post->update_time = time();
         $post->save();
 
         $updateCounter = new AddPostCount($post, $thread);

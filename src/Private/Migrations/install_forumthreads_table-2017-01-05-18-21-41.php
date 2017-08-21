@@ -26,6 +26,7 @@ class install_forumthreads_table extends Migration implements MigrationInterface
             $table->integer('view_count')->unsigned();
             $table->boolean('important')->default(false);
             $table->boolean('closed')->default(false);
+            $table->integer("update_time")->default(0);
             $table->timestamps();
         });
         parent::up();

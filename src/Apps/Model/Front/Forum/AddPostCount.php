@@ -73,6 +73,7 @@ class AddPostCount extends Model
         // update thread info
         $this->_thread->post_count += 1;
         $this->_thread->updater_id = $this->_user->getId();
+        $this->_thread->update_time = time();
         $this->_thread->save();
 
         // update forum info by lastpost in thread relation

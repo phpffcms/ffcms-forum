@@ -107,7 +107,13 @@ class FormCreateThread extends Model
         $record->creator_id = $this->_user->getId();
         $record->forum_id = $this->_record->id;
         $record->lang = $this->_lang;
+        $record->update_time = time();
         $record->save();
+
+        // update user post count
+        $profile = $this->_user->getProfile();
+        $profile->forum_post += 1;
+        $profile->save();
 
         // set model new tread ID
         $this->threadId = $record->id;

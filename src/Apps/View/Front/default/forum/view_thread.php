@@ -43,72 +43,72 @@ $this->breadcrumbs = $breads;
     </div>
     <div class="panel-body topic-body">
         <?php if ($page < 1): ?>
-        <div class="row post-row clearfix" id="post-0">
-            <div class="author col-md-2 col-sm-3 col-xs-12">
-                <?php $user = \App::$User->identity($threadRecord->creator_id) ?>
-                <div class="author-name">
-                    <div class="h4"><?= Simplify::parseUserLink($threadRecord->creator_id) ?></div>
-                </div>
-                <div class="author-title">
-                    <div class="h5">
-                        <span style="color: <?= $user->getRole()->color ?>"><?= $user->getRole()->name ?></span>
+            <div class="row post-row clearfix" id="post-0">
+                <div class="author col-md-2 col-sm-3 col-xs-12">
+                    <?php $user = \App::$User->identity($threadRecord->creator_id) ?>
+                    <div class="author-name">
+                        <div class="h4"><?= Simplify::parseUserLink($threadRecord->creator_id) ?></div>
+                    </div>
+                    <div class="author-title">
+                        <div class="h5">
+                            <span style="color: <?= $user->getRole()->color ?>"><?= $user->getRole()->name ?></span>
+                        </div>
+                    </div>
+                    <div class="author-avatar"><img src="<?= $user->getProfile()->getAvatarUrl('small') ?>" alt="User avatar"></div>
+                    <div class="author-registered"><?= __('Joined: %date%', ['date' => Date::convertToDatetime($user->created_at, 'm.Y')]) ?></div>
+                    <div class="author-posts"><?= __('Posts: %post%', ['post' => (int)$user->getProfile()->forum_post]) ?></div>
+                    <div class="author-pm">
+                        <?php if (\App::$User->isAuth() && $user->getId() !== \App::$User->identity()->getId()): ?>
+                            <a href="<?= Url::to('profile/messages', null, null, ['newdialog' => $user->getId()]) ?>"><i class="glyphicon glyphicon-envelope"></i></a>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <div class="author-avatar"><img src="<?= $user->getProfile()->getAvatarUrl('small') ?>" alt="User avatar"></div>
-                <div class="author-registered"><?= __('Joined: %date%', ['date' => Date::convertToDatetime($user->created_at, 'm.Y')]) ?></div>
-                <div class="author-posts"><?= __('Posts: %post%', ['post' => (int)$user->getProfile()->forum_post]) ?></div>
-                <div class="author-pm">
-                    <?php if (\App::$User->isAuth() && $user->getId() !== \App::$User->identity()->getId()): ?>
-                        <a href="<?= Url::to('profile/messages', null, null, ['newdialog' => $user->getId()]) ?>"><i class="glyphicon glyphicon-envelope"></i></a>
-                    <?php endif; ?>
+
+                <div class="post-box col-md-10 col-sm-9 col-xs-12">
+                    <div class="post-meta clearfix">
+                        <div class="pull-left">
+                            <!-- Creation date / Date modified -->
+                            <span class="text-info"><?= __('Created: %date%', ['date' => Date::humanize($threadRecord->created_at)]) ?></span>
+                        </div>
+                        <!-- Post number -->
+                        <div class="pull-right">
+                            <strong>#<?= $offset ?></strong>
+                        </div>
+                    </div>
+
+                    <div class="post-content post-message clearfix">
+                        <?= $threadRecord->message ?>
+                    </div>
+
+                    <div class="post-footer clearfix">
+                        <div class="pull-left" style="padding-left: 10px;">
+                            <a href="#fanswer" class="label label-primary make-quote" id="quote-post-0">
+                                <i class="glyphicon glyphicon-forward"></i>
+                            </a>
+                        </div>
+                        <!-- Report/Edit/Delete/Quote Post-->
+                        <div class="post-menu pull-right">
+                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+                                <?= Url::link(['forum/deletethread', $threadRecord->id], __('Delete'), ['class' => 'label label-danger']) ?>
+                            <?php endif; ?>
+                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/edit')): ?>
+                                <?= Url::link(['forum/updatethread', $threadRecord->id], __('Edit'), ['class' => 'label label-warning']) ?>
+                            <?php endif; ?>
+                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/move')): ?>
+                                <?= Url::link(['forum/movethread', $threadRecord->id], __('Move'), ['class' => 'label label-info']) ?>
+                            <?php endif; ?>
+                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/pin')): ?>
+                                <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->important ? __('Unpin') : __('Pin')), ['class' => 'label label-primary']) ?>
+                            <?php endif; ?>
+                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/close')): ?>
+                                <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->closed ? __('Open') : __('Close')), ['class' => 'label label-default']) ?>
+                            <?php endif; ?>
+                        </div> <!-- end post-menu -->
+                    </div> <!-- end footer -->
+
                 </div>
             </div>
-
-            <div class="post-box col-md-10 col-sm-9 col-xs-12">
-                <div class="post-meta clearfix">
-                    <div class="pull-left">
-                        <!-- Creation date / Date modified -->
-                        <span class="text-info"><?= __('Created: %date%', ['date' => Date::humanize($threadRecord->created_at)]) ?></span>
-                    </div>
-                    <!-- Post number -->
-                    <div class="pull-right">
-                        <strong>#<?= $offset ?></strong>
-                    </div>
-                </div>
-
-                <div class="post-content post-message clearfix">
-                    <?= $threadRecord->message ?>
-                </div>
-
-                <div class="post-footer clearfix">
-                    <div class="pull-left" style="padding-left: 10px;">
-                        <a href="#fanswer" class="label label-primary make-quote" id="quote-post-0">
-                            <i class="glyphicon glyphicon-forward"></i>
-                        </a>
-                    </div>
-                    <!-- Report/Edit/Delete/Quote Post-->
-                    <div class="post-menu pull-right">
-                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
-                            <?= Url::link(['forum/deletethread', $threadRecord->id], __('Delete'), ['class' => 'label label-danger']) ?>
-                        <?php endif; ?>
-                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/edit')): ?>
-                            <?= Url::link(['forum/updatethread', $threadRecord->id], __('Edit'), ['class' => 'label label-warning']) ?>
-                        <?php endif; ?>
-                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/move')): ?>
-                            <?= Url::link(['forum/movethread', $threadRecord->id], __('Move'), ['class' => 'label label-info']) ?>
-                        <?php endif; ?>
-                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/pin')): ?>
-                            <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->important ? __('Unpin') : __('Pin')), ['class' => 'label label-primary']) ?>
-                        <?php endif; ?>
-                        <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/close')): ?>
-                            <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->closed ? __('Open') : __('Close')), ['class' => 'label label-default']) ?>
-                        <?php endif; ?>
-                    </div> <!-- end post-menu -->
-                </div> <!-- end footer -->
-
-            </div>
-        </div>
-        <?php $offset++; ?>
+            <?php $offset++; ?>
         <?php endif; ?>
         <?php foreach ($postRecord as $post): ?>
             <div class="row post-row clearfix" id="post-<?= $post->id ?>">
@@ -154,9 +154,9 @@ $this->breadcrumbs = $breads;
                         <?= $post->message ?>
                     </div>
                     <?php if ((string)$post->created_at !== (string)$post->updated_at): ?>
-                    <div class="label label-warning" style="margin: 5px;">
-                        <?= __('Been edited: %date%', ['date' => Date::humanize($post->updated_at)]) ?>
-                    </div>
+                        <div class="label label-warning" style="margin: 5px;">
+                            <?= __('Been edited: %date%', ['date' => Date::humanize($post->updated_at)]) ?>
+                        </div>
                     <?php endif ?>
 
                     <div class="post-footer clearfix">
@@ -181,7 +181,7 @@ $this->breadcrumbs = $breads;
                     </div> <!-- end footer -->
                 </div>
             </div>
-        <?php $offset++ ?>
+            <?php $offset++ ?>
         <?php endforeach; ?>
         <div id="new-post-object"></div>
     </div>

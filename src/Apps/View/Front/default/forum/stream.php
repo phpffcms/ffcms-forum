@@ -28,7 +28,7 @@ if ($records === null || $records->count() < 1) {
         <?php foreach ($records as $record): ?>
             <?php if ((int)$record->post_count < 1): // thread have no answers, display as new thread ?>
                 <div class="forum-stream stream-newthread">
-                    <span class="label label-primary"><?= Date::humanize($record->created_at) ?></span>
+                    <span class="label label-primary"><?= Date::humanize($record->update_time) ?></span>
                     <?= __('User %user% create the new thread: %thread%', [
                         'user' => Simplify::parseUserLink($record->creator_id),
                         'thread' => Url::link(['forum/viewthread', $record->id], Text::snippet(\App::$Security->strip_tags($record->title), 50))
@@ -36,7 +36,7 @@ if ($records === null || $records->count() < 1) {
                 </div>
             <?php else: ?>
                 <div class="forum-stream stream-newpost">
-                    <span class="label label-success"><?= Date::humanize($record->created_at) ?></span>
+                    <span class="label label-success"><?= Date::humanize($record->update_time) ?></span>
                     <?= __('User %user% add new post answer in thread: %thread%', [
                         'user' => Simplify::parseUserLink($record->updater_id),
                         'thread' => Url::link(['forum/lastpost', $record->id], Text::snippet(\App::$Security->strip_tags($record->title), 50))

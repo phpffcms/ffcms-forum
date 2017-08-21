@@ -146,7 +146,7 @@ class FormMoveThread extends Model
         $ids = [];
         $records = ForumItem::where('id', '!=', $this->id)->get(['id']);
         foreach ($records as $item) {
-            $ids[] = (string)$item->id;
+            $ids[] = (int)$item->id;
         }
 
         return $ids;

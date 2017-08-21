@@ -19,11 +19,27 @@ use Ffcms\Core\Arch\ActiveModel;
  * @property int $view_count
  * @property int $important
  * @property int $closed
+ * @property int $update_time
  * @property string $created_at
  * @property string $updated_at
  */
 class ForumThread extends ActiveModel
 {
+    protected $casts = [
+        'id' => 'integer',
+        'title' => 'string',
+        'message' => 'string',
+        'creator_id' => 'integer',
+        'updater_id' => 'integer',
+        'forum_id' => 'integer',
+        'lang' => 'string',
+        'post_count' => 'integer',
+        'view_count' => 'integer',
+        'important' => 'integer',
+        'closed' => 'integer',
+        'update_time' => 'integer'
+    ];
+
     /**
      * Get all posts relation
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

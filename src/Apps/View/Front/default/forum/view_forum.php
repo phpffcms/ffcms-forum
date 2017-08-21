@@ -85,7 +85,7 @@ $this->breadcrumbs = $bread;
                         </div>
                         <div class="last-post-time">
                             <?php if ($lastThread !== null) {
-                                echo Date::humanize($lastThread['updated_at']);
+                                echo Date::humanize($lastThread['update_time']);
                             } ?>
                         </div>
                         <div class="last-post-author">
@@ -174,7 +174,7 @@ $this->breadcrumbs = $bread;
                         </div>
                         <?php endif; ?>
                         <?php if ((int)$thread['updater_id'] > 0) {
-                            echo Url::link(['forum/lastpost', $thread['id']], Date::humanize($thread['updated_at']));
+                            echo Url::link(['forum/lastpost', $thread['id']], Date::humanize($thread['update_time']));
                         } else {
                             echo '-';
                         } ?>

@@ -24,6 +24,7 @@ use Ffcms\Core\Helper\Type\Obj;
  * @property int $post_count
  * @property string|array $updater_id
  * @property string|array $updated_thread
+ * @property int $update_time
  * @property string $created_at
  * @property string $updated_at
  */
@@ -32,7 +33,8 @@ class ForumItem extends ActiveModel
     protected $casts = [
         'name' => 'serialize',
         'snippet' => 'serialize',
-        'category_id' => 'integer'
+        'category_id' => 'integer',
+        'update_time' => 'integer'
     ];
 
     /**
