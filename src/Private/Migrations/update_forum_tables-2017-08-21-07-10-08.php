@@ -17,17 +17,17 @@ class update_forum_tables extends Migration implements MigrationInterface
         // use important column for content app
         if (!$this->getSchema()->hasColumn('forum_items', 'update_time')) {
             $this->getSchema()->table('forum_items', function ($table) {
-                $table->boolean('update_time')->default(0);
+                $table->integer('update_time')->default(0);
             });
         }
         if (!$this->getSchema()->hasColumn('forum_posts', 'update_time')) {
             $this->getSchema()->table('forum_posts', function ($table) {
-                $table->boolean('update_time')->default(0);
+                $table->integer('update_time')->default(0);
             });
         }
         if (!$this->getSchema()->hasColumn('forum_threads', 'update_time')) {
             $this->getSchema()->table('forum_threads', function ($table) {
-                $table->boolean('update_time')->default(0);
+                $table->integer('update_time')->default(0);
             });
         }
         parent::up();
