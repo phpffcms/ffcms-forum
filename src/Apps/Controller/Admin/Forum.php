@@ -23,7 +23,7 @@ use Ffcms\Core\Managers\MigrationsManager;
 
 class Forum extends AdminController
 {
-    const VERSION = '1.0.2';
+    const VERSION = '1.0.4';
 
     private $appRoot;
     private $tplDir;
@@ -288,15 +288,15 @@ class Forum extends AdminController
 
     public static function update($dbVersion)
     {
-        /** use downgrade switch logic without break's. Example: db version is 0.1, but script version is 0.3
-        * so when this function will be runned for 0.1 version will be applied cases 0.1, 0.2, 0.3 */
+        $root = realpath(__DIR__ . '/../../../');
+        $migrations = new MigrationsManager($root . '/Private/Migrations');
+
         switch($dbVersion) {
-            case 0.1:
-                // actions for 0.1 version without break (!!!) will also apply next
-            case 0.2:
-                // actions for 0.2 version aren't take 0.1 but take next ;D
-            case 0.3:
-                // and next..
+            case '1.0.2':
+            case '1.0.3':
+                $migrations->makeUp([
+                    'update_forum_tables-2017-08-21-07-10-08.php'
+                ]);
             break;
             default:
                 // some default actions

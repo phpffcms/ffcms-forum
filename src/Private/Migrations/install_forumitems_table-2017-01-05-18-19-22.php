@@ -26,7 +26,7 @@ class install_forumitems_table extends Migration implements MigrationInterface
             $table->integer('post_count')->unsigned()->default(0);
             $table->string('updater_id', 1024)->nullable();
             $table->string('updated_thread', 1024)->nullable();
-            $table->integer("update_time")->default(0);
+            $table->integer('update_time')->default(0);
             $table->timestamps();
         });
         parent::up();

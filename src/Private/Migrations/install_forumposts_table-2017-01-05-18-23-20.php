@@ -20,7 +20,7 @@ class install_forumposts_table extends Migration implements MigrationInterface
             $table->integer('thread_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->string('lang', 16)->default('en');
-            $table->integer("update_time")->default(0);
+            $table->integer('update_time')->default(0);
             $table->timestamps();
         });
         parent::up();
