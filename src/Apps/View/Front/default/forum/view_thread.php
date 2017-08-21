@@ -5,7 +5,7 @@ use Ffcms\Core\Helper\Simplify;
 use Ffcms\Core\Helper\Url;
 
 /** @var \Apps\ActiveRecord\ForumThread $threadRecord */
-/** @var \Apps\ActiveRecord\ForumPost $postRecord */
+/** @var \Apps\ActiveRecord\ForumPost[] $postRecord */
 /** @var \Apps\ActiveRecord\ForumItem|null $parentRecord */
 /** @var \Apps\ActiveRecord\ForumItem $forumRecord */
 /** @var \Ffcms\Core\Helper\HTML\SimplePagination $pagination */
@@ -31,6 +31,7 @@ $breads[] = __('Topic: %title%', ['title' => $threadRecord->title]);
 
 $this->breadcrumbs = $breads;
 
+$currentUser = \App::$User->identity();
 ?>
 
 <?= $pagination->display(['class' => 'pagination pagination-sm']) ?>
@@ -88,19 +89,21 @@ $this->breadcrumbs = $breads;
                         </div>
                         <!-- Report/Edit/Delete/Quote Post-->
                         <div class="post-menu pull-right">
-                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+                            <?php if (\App::$User->isAuth() && $currentUser->getRole()->can('forum/delete')): ?>
                                 <?= Url::link(['forum/deletethread', $threadRecord->id], __('Delete'), ['class' => 'label label-danger']) ?>
                             <?php endif; ?>
-                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/edit')): ?>
+                            <?php if (\App::$User->isAuth() &&
+                                ($currentUser->getRole()->can('forum/edit') ||
+                                    ($currentUser->getId() === $threadRecord->creator_id && !(bool)$threadRecord->closed))): ?>
                                 <?= Url::link(['forum/updatethread', $threadRecord->id], __('Edit'), ['class' => 'label label-warning']) ?>
                             <?php endif; ?>
-                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/move')): ?>
+                            <?php if (\App::$User->isAuth() && $currentUser->getRole()->can('forum/move')): ?>
                                 <?= Url::link(['forum/movethread', $threadRecord->id], __('Move'), ['class' => 'label label-info']) ?>
                             <?php endif; ?>
-                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/pin')): ?>
+                            <?php if (\App::$User->isAuth() && $currentUser->getRole()->can('forum/pin')): ?>
                                 <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->important ? __('Unpin') : __('Pin')), ['class' => 'label label-primary']) ?>
                             <?php endif; ?>
-                            <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/close')): ?>
+                            <?php if (\App::$User->isAuth() && $currentUser->getRole()->can('forum/close')): ?>
                                 <?= Url::link(['forum/statusthread', $threadRecord->id], ((bool)$threadRecord->closed ? __('Open') : __('Close')), ['class' => 'label label-default']) ?>
                             <?php endif; ?>
                         </div> <!-- end post-menu -->
@@ -111,6 +114,7 @@ $this->breadcrumbs = $breads;
             <?php $offset++; ?>
         <?php endif; ?>
         <?php foreach ($postRecord as $post): ?>
+            <?php /** @var \Apps\ActiveRecord\ForumPost $post */ ?>
             <div class="row post-row clearfix" id="post-<?= $post->id ?>">
                 <div class="author col-md-2 col-sm-3 col-xs-12">
                     <?php $user = \App::$User->identity($post->user_id) ?>
@@ -163,17 +167,19 @@ $this->breadcrumbs = $breads;
                         <!-- Report/Edit/Delete/Quote Post-->
                         <div class="post-menu">
                             <div class="pull-left" style="padding-left: 10px;">
-                                <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/post')): ?>
+                                <?php if (\App::$User->isAuth() && $currentUser->getRole()->can('forum/post')): ?>
                                     <a href="#fanswer" class="label label-default make-quote" id="quote-post-<?= $post->id ?>">
                                         <i class="glyphicon glyphicon-forward"></i>
                                     </a>
                                 <?php endif; ?>
                             </div>
                             <div class="pull-right">
-                                <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/delete')): ?>
+                                <?php if (\App::$User->isAuth() && $currentUser->getRole()->can('forum/delete')): ?>
                                     <a href="javascript:void(0)" class="label label-danger delete-post-trigger" id="delete-post-<?= $post->id ?>"><?= __('Delete') ?></a>
                                 <?php endif; ?>
-                                <?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/edit')): ?>
+                                <?php if (\App::$User->isAuth() &&
+                                    ($currentUser->getRole()->can('forum/edit')) ||
+                                    ($post->user_id === $currentUser->id && !(bool)$threadRecord->closed)): ?>
                                     <a href="javascript:void(0)" class="label label-warning edit-post-trigger" id="edit-post-<?= $post->id ?>"><?= __('Edit') ?></a>
                                 <?php endif; ?>
                             </div>

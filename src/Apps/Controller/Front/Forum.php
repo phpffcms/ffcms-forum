@@ -11,7 +11,6 @@ use Apps\Model\Front\Forum\EntityForumSummary;
 use Apps\Model\Front\Forum\FormCreateThread;
 use Apps\Model\Front\Forum\FormDeleteThread;
 use Apps\Model\Front\Forum\FormMassDeleteThreads;
-use Apps\Model\Front\Forum\FormPinThread;
 use Apps\Model\Front\Forum\FormStatusThread;
 use Apps\Model\Front\Forum\FormUpdateThread;
 use Apps\Model\Front\Forum\FormMoveThread;
@@ -347,14 +346,16 @@ class Forum extends FrontAppController
      */
     public function actionUpdatethread($id)
     {
-        // check user permissions
-        if (!App::$User->isAuth() || !App::$User->identity()->getRole()->can('forum/edit')) {
-            throw new ForbiddenException(__('You have no permissions to edit thread'));
-        }
-
+        /** @var ForumThread $record */
         $record = ForumThread::find($id);
         if ($record === null) {
             throw new NotFoundException(__('Thread is not found'));
+        }
+
+        // check user permissions
+        if (!App::$User->isAuth() || (!App::$User->identity()->getRole()->can('forum/edit') &&
+                (App::$User->identity()->getId() !== $record->creator_id || (bool)$record->closed || !App::$User->identity()->getRole()->can('forum/thread')))) {
+            throw new ForbiddenException(__('You have no permissions to edit thread'));
         }
 
         $model = new FormUpdateThread($record, App::$Request->getLanguage());

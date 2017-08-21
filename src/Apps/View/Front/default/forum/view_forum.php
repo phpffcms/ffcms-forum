@@ -100,7 +100,10 @@ $this->breadcrumbs = $bread;
     </div>
 <?php endif; ?>
 
-<?php if (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/thread')): ?>
+<?php
+    $canAddThread =  (\App::$User->isAuth() && \App::$User->identity()->getRole()->can('forum/thread'));
+?>
+
 <div class="row">
     <div class="col-md-6">
         <div class="pull-left">
@@ -108,15 +111,21 @@ $this->breadcrumbs = $bread;
         </div>
     </div>
     <div class="col-md-6">
+        <?php if ($canAddThread): ?>
         <div class="pull-right">
             <a href="<?= Url::to('forum/createthread', $forumRecord['id']) ?>" class="btn btn-success btn-sm">
                 <i class="glyphicon glyphicon-plus"></i> <?= __('New topic') ?>
             </a>
         </div>
+        <?php endif; ?>
     </div>
 </div>
-<?php else: ?>
-    <p class="alert alert-warning"><?= __('You should register or authorize on website to create new threads') ?></p>
+<?php if (!$canAddThread): ?>
+    <?php if (!\App::$User->isAuth()): ?>
+        <p class="alert alert-warning"><?= __('You should register or authorize on website to create new threads') ?></p>
+    <?php else: ?>
+        <p class="alert alert-danger"><?= __('Your account now have only read permissions due to improper conduct') ?></p>
+    <?php endif; ?>
 <?php endif; ?>
 
 <form action="" method="get">

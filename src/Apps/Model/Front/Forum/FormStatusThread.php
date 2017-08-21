@@ -37,8 +37,8 @@ class FormStatusThread extends Model
     {
         return [
             [['pinned', 'closed'], 'required'],
-            ['pinned', 'in', ['0', '1']],
-            ['closed', 'in', ['0', '1']]
+            ['pinned', 'in', [0, 1]],
+            ['closed', 'in', [0, 1]]
         ];
     }
 
@@ -75,6 +75,4 @@ class FormStatusThread extends Model
         $this->_thread->closed = (bool)$this->closed;
         $this->_thread->save();
     }
-
-
 }

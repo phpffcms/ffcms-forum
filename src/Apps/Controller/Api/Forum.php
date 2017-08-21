@@ -185,14 +185,16 @@ class Forum extends ApiController
     {
         // set headers & check if user have permissions to edit posts
         $this->setJsonHeader();
-        if (!App::$User->isAuth() || !App::$User->identity()->getRole()->can('forum/edit')) {
-            throw new ForbiddenException(__('You have no permissions to edit post'));
-        }
 
         // find post object
+        /** @var ForumPost $post */
         $post = ForumPost::find($id);
         if ($post === null) {
             throw new NotFoundException(__('Post not found'));
+        }
+
+        if (!App::$User->isAuth() || App::$User->identity()->getRole()->can('forum/post') || (!App::$User->identity()->getRole()->can('forum/edit') && App::$User->identity()->id !== $post->user_id)) {
+            throw new ForbiddenException(__('You have no permissions to edit post'));
         }
 
         // get new message for this post

@@ -80,5 +80,7 @@ return [
     'Close' => 'Закрыть',
     'Open' => 'Открыть',
     'User %user% add new post answer in thread: %thread%' => 'Пользователь %user% добавил новый ответ в тему: %thread%',
-    'New forum post answer in &laquo;%snippet%&raquo; from &laquo;%user%&raquo;' => 'Новый ответ на форуме в теме &laquo;%snippet%&raquo; от &laquo;%user%&raquo;'
+    'New forum post answer in &laquo;%snippet%&raquo; from &laquo;%user%&raquo;' => 'Новый ответ на форуме в теме &laquo;%snippet%&raquo; от &laquo;%user%&raquo;',
+    'Your account now have only read permissions due to improper conduct' => 'Теперь ваш аккаунт имеет только права на чтение форума из-за ненадлежащего поведения',
+    'You have no permissions to edit thread' => 'У вас нет полномочий на редактирование темы'
 ];
